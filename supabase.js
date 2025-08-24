@@ -12,7 +12,7 @@ const auth = {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: window.location.origin
+                redirectTo: 'https://tnjdqipuegeuzpfbrxmv.supabase.co/auth/v1/callback'
             }
         });
         return { data, error };
@@ -62,7 +62,12 @@ const db = {
                 
                 if (error.code === '42P01') {
                     console.error('Table "profiles" does not exist. Please create the table first.');
-                    throw new Error('Database table not found. Please contact support.');
+                    throw new Error('Database table "profiles" does not exist. Please create it in Supabase first.');
+                }
+                
+                if (error.code === '400') {
+                    console.error('Bad request error - likely table structure issue');
+                    throw new Error('Database query failed. Please check if the profiles table exists and has the correct structure.');
                 }
             }
             
@@ -179,18 +184,21 @@ const testConnection = async () => {
         if (error) {
             if (error.code === '42P01') {
                 console.log('✅ Supabase connection working, but profiles table does not exist');
-                return { connected: true, tableExists: false };
+                return { connected: true, tableExists: false, message: 'Table "profiles" does not exist. Please create it first.' };
+            } else if (error.code === '400') {
+                console.log('⚠️ Supabase connection working, but profiles table has issues');
+                return { connected: true, tableExists: false, message: 'Table exists but has structure issues. Please check the table schema.' };
             } else {
                 console.error('❌ Database error:', error);
-                return { connected: true, tableExists: false, error };
+                return { connected: true, tableExists: false, error, message: 'Database error: ' + error.message };
             }
         } else {
             console.log('✅ Supabase connection working and profiles table exists');
-            return { connected: true, tableExists: true };
+            return { connected: true, tableExists: true, message: 'Database connection working perfectly!' };
         }
     } catch (err) {
         console.error('❌ Connection test failed:', err);
-        return { connected: false, error: err };
+        return { connected: false, error: err, message: 'Connection failed: ' + err.message };
     }
 };
 
