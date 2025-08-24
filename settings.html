@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - NSA Network</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .settings-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            color: white;
+        }
+        
+        .settings-header {
+            text-align: center;
+        }
+        
+        .settings-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .settings-header p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+        
+        .settings-content {
+            padding: 3rem 0;
+        }
+        
+        .settings-nav {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+        }
+        
+        .settings-nav-item {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            font-family: inherit;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .settings-nav-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .settings-nav-item:hover:not(.active) {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .settings-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .settings-section.active {
+            display: block;
+        }
+        
+        .settings-section h2 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .setting-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: var(--border-color);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .toggle-switch.active {
+            background: var(--primary-color);
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(22px);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        .danger-zone {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .danger-zone h3 {
+            color: var(--danger-color);
+            margin-bottom: 1rem;
+        }
+        
+        .danger-zone p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-nav {
+                flex-direction: column;
+            }
+            
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="nsa-header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>NSA Network</h2>
+                        <span>Nepali Student Associations</span>
+                    </div>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="home.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="donation.html" class="nav-link">Donation & Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <!-- User profile will be inserted here by JavaScript -->
+                </div>
+                <div class="hamburger" onclick="toggleSidebar()" title="Open Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">NSA Network</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="search.html" class="sidebar-link">
+                    <i class="fas fa-search"></i>
+                    Find NSA
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="donation.html" class="sidebar-link">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    Donation & Help
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="events.html" class="sidebar-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    Events Hub
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="profile.html" class="sidebar-link">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="settings.html" class="sidebar-link">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <main>
+        <!-- Settings Hero Section -->
+        <section class="settings-hero">
+            <div class="container">
+                <div class="settings-header">
+                    <h1>Settings</h1>
+                    <p>Manage your account preferences and privacy settings</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Content -->
+        <section class="settings-content">
+            <div class="container">
+                <!-- Settings Navigation -->
+                <div class="settings-nav">
+                    <button class="settings-nav-item active" data-section="general">
+                        <i class="fas fa-cog"></i> General
+                    </button>
+                    <button class="settings-nav-item" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </button>
+                    <button class="settings-nav-item" data-section="privacy">
+                        <i class="fas fa-shield-alt"></i> Privacy
+                    </button>
+                    <button class="settings-nav-item" data-section="security">
+                        <i class="fas fa-lock"></i> Security
+                    </button>
+                    <button class="settings-nav-item" data-section="account">
+                        <i class="fas fa-user-cog"></i> Account
+                    </button>
+                </div>
+
+                <!-- General Settings -->
+                <div class="settings-section active" id="general">
+                    <h2>
+                        <i class="fas fa-cog"></i>
+                        General Settings
+                    </h2>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Language</div>
+                            <div class="setting-description">Choose your preferred language</div>
+                        </div>
+                        <div class="setting-control">
+                            <select id="language">
+                                <option value="en">English</option>
+                                <option value="ne">नेपाली (Nepali)</option>
+                                <option value="hi">हिंदी (Hindi)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Time Zone</div>
+                            <div class="setting-description">Your current time zone</div>
+                        </div>
+                        <div class="setting-control">
+                            <select id="timezone">
+                                <option value="America/New_York">Eastern Time (ET)</option>
+                                <option value="America/Chicago">Central Time (CT)</option>
+                                <option value="America/Denver">Mountain Time (MT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Dark Mode</div>
+                            <div class="setting-description">Switch to dark theme</div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="toggle-switch" id="darkModeToggle">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="settings-section" id="notifications">
+                    <h2>
+                        <i class="fas fa-bell"></i>
+                        Notification Settings
+                    </h2>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Email Notifications</div>
+                            <div class="setting-description">Receive updates via email</div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="toggle-switch active" id="emailNotifications">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Donation Updates</div>
+                            <div class="setting-description">Get notified about new donation requests</div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="toggle-switch active" id="donationUpdates">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Event Reminders</div>
+                            <div class="setting-description">Reminders for upcoming events</div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="toggle-switch active" id="eventReminders">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Marketing Emails</div>
+                            <div class="setting-description">Promotional and marketing content</div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="toggle-switch" id="marketingEmails">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="settings-section" id="privacy">
+                    <h2>
+                        <i class="fas fa-shield-alt"></i>
+                        Privacy Settings
+                    </h2>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Profile Visibility</div>
+                            <div class="setting-description">Who can see your profile</div>
+                        </div>
+                        <div class="setting-control">
+                            <select id="profileVisibility">
+                                <option value="public">Everyone</option>
+                                <option value="members">NSA Members Only</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Show Donation History</div>
+                            <div class="setting-description">Display your donation activity</div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="toggle-switch" id="showDonations">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Contact Information</div>
+                            <div class="setting-description">Allow others to see your contact info</div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="toggle-switch active" id="showContact">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="settings-section" id="security">
+                    <h2>
+                        <i class="fas fa-lock"></i>
+                        Security Settings
+                    </h2>
+                    
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" placeholder="Enter your current password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" placeholder="Enter new password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Two-Factor Authentication</div>
+                            <div class="setting-description">Add an extra layer of security</div>
+                        </div>
+                        <div class="setting-control">
+                            <button class="btn btn-primary">Enable 2FA</button>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="updatePassword()">Update Password</button>
+                    </div>
+                </div>
+
+                <!-- Account Settings -->
+                <div class="settings-section" id="account">
+                    <h2>
+                        <i class="fas fa-user-cog"></i>
+                        Account Settings
+                    </h2>
+                    
+                    <div class="form-group">
+                        <label for="accountEmail">Email Address</label>
+                        <input type="email" id="accountEmail" readonly>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Account Status</div>
+                            <div class="setting-description">Your account is active and verified</div>
+                        </div>
+                        <div class="setting-control">
+                            <span class="badge badge-success">Active</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Member Since</div>
+                            <div class="setting-description" id="memberSinceDate">January 2024</div>
+                        </div>
+                    </div>
+                    
+                    <div class="danger-zone">
+                        <h3>Danger Zone</h3>
+                        <p>Once you delete your account, there is no going back. Please be certain.</p>
+                        <button class="btn-danger" onclick="confirmDeleteAccount()">Delete Account</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="nsa-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-users"></i>
+                        <span>NSA Network</span>
+                    </div>
+                    <p>Connecting Nepali students across American universities</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="donation.html">Donation & Help</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 NSA Network. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Settings page specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSettings();
+        });
+
+        function initializeSettings() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userData);
+                populateSettings(user);
+                setupSettingsNavigation();
+                setupToggleSwitches();
+                loadSavedSettings();
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        function populateSettings(user) {
+            document.getElementById('accountEmail').value = user.email;
+            
+            const loginTime = user.loginTime ? new Date(user.loginTime) : new Date();
+            document.getElementById('memberSinceDate').textContent = loginTime.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long'
+            });
+        }
+
+        function setupSettingsNavigation() {
+            const navItems = document.querySelectorAll('.settings-nav-item');
+            const sections = document.querySelectorAll('.settings-section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const targetSection = this.dataset.section;
+                    
+                    // Update active nav item
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target section
+                    sections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(targetSection).classList.add('active');
+                });
+            });
+        }
+
+        function setupToggleSwitches() {
+            const toggles = document.querySelectorAll('.toggle-switch');
+            
+            toggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    saveSettings();
+                });
+            });
+        }
+
+        function loadSavedSettings() {
+            const settings = localStorage.getItem('userSettings');
+            if (settings) {
+                try {
+                    const savedSettings = JSON.parse(settings);
+                    
+                    // Apply saved settings
+                    Object.keys(savedSettings).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            if (element.classList.contains('toggle-switch')) {
+                                if (savedSettings[key]) {
+                                    element.classList.add('active');
+                                } else {
+                                    element.classList.remove('active');
+                                }
+                            } else {
+                                element.value = savedSettings[key];
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading saved settings:', error);
+                }
+            }
+        }
+
+        function saveSettings() {
+            const settings = {};
+            
+            // Save toggle states
+            const toggles = document.querySelectorAll('.toggle-switch');
+            toggles.forEach(toggle => {
+                settings[toggle.id] = toggle.classList.contains('active');
+            });
+            
+            // Save select values
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                settings[select.id] = select.value;
+            });
+            
+            localStorage.setItem('userSettings', JSON.stringify(settings));
+            showNotification('Settings saved successfully!', 'success');
+        }
+
+        function updatePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            if (!current || !newPass || !confirm) {
+                showNotification('Please fill in all password fields.', 'error');
+                return;
+            }
+            
+            if (newPass !== confirm) {
+                showNotification('New passwords do not match.', 'error');
+                return;
+            }
+            
+            if (newPass.length < 6) {
+                showNotification('Password must be at least 6 characters long.', 'error');
+                return;
+            }
+            
+            // Simulate password update
+            setTimeout(() => {
+                showNotification('Password updated successfully!', 'success');
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            }, 1000);
+        }
+
+        function confirmDeleteAccount() {
+            const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+            
+            if (confirmed) {
+                const doubleConfirm = confirm('This will permanently delete all your data. Are you absolutely sure?');
+                
+                if (doubleConfirm) {
+                    // Clear all user data
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('userSettings');
+                    
+                    alert('Your account has been deleted. You will be redirected to the login page.');
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                color: white;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}" style="margin-right: 0.5rem;"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Save settings when form inputs change
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('select')) {
+                saveSettings();
+            }
+        });
+    </script>
+</body>
+</html>

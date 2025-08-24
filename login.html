@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NSA Network</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="nsa-header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>NSA Network</h2>
+                        <span>Nepali Student Associations</span>
+                    </div>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="donation.html" class="nav-link">Donation & Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="login.html" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </a>
+                </div>
+                <div class="hamburger" onclick="toggleSidebar()" title="Open Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">NSA Network</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="index.html" class="sidebar-link">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="donation.html" class="sidebar-link">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    Donation & Help
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="events.html" class="sidebar-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    Events Hub
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="alumni.html" class="sidebar-link">
+                    <i class="fas fa-user-graduate"></i>
+                    Alumni Spotlight
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <main>
+        <!-- Login Hero Section -->
+        <section class="login-hero">
+            <div class="hero-background">
+                <div class="hero-pattern"></div>
+            </div>
+            <div class="container">
+                <div class="login-content">
+                    <div class="login-form-container">
+                        <div class="login-header">
+                            <h1 id="loginHeaderTitle">Welcome Back</h1>
+                            <p id="loginHeaderSubtitle">Sign in to your NSA Network account</p>
+                        </div>
+                        
+                        <div class="login-options">
+                            <button class="google-login-btn" onclick="handleGoogleLogin()">
+                                <i class="fab fa-google"></i>
+                                Continue with Google
+                            </button>
+                            
+                            <div class="divider">
+                                <span>or</span>
+                            </div>
+                            
+                            <form id="loginForm" class="login-form" onsubmit="event.preventDefault(); handleFormSubmission();">
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" placeholder="Enter your email" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <div class="password-input">
+                                        <input type="password" id="password" placeholder="Enter your password" required>
+                                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-options">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="rememberMe">
+                                        <span class="checkmark"></span>
+                                        Remember me
+                                    </label>
+                                    <a href="#" class="forgot-password" onclick="event.preventDefault(); handleForgotPassword();">Forgot password?</a>
+                                </div>
+                                
+                                <button type="submit" class="login-submit-btn">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Sign In
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="login-footer">
+                            <p id="loginFooterText">Don't have an account? <a href="#" onclick="toggleLoginMode()">Sign up</a></p>
+                        </div>
+                    </div>
+                    
+                    <div class="login-visual">
+                        <div class="login-illustration">
+                            <div class="illustration-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Join the NSA Network</h3>
+                            <p>Connect with fellow Nepali students and professionals</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Success Modal -->
+    <div id="loginSuccessModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Welcome Back!</h3>
+                <button class="close-btn" onclick="closeLoginModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="login-success-content">
+                    <div class="user-avatar">
+                        <img src="https://via.placeholder.com/80x80/3b82f6/ffffff?text=U" alt="User Avatar">
+                    </div>
+                    <h4>Welcome, User!</h4>
+                    <p>You have successfully signed in to your NSA Network account.</p>
+                    
+                    <div class="login-details">
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Login Time: <span id="loginTime"></span></span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Location: San Francisco, CA</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-desktop"></i>
+                            <span>Device: MacBook Pro</span>
+                        </div>
+                    </div>
+                    
+                    <div class="login-actions">
+                        <button class="btn btn-primary" onclick="redirectToDashboard()">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Go to Dashboard
+                        </button>
+                        <button class="btn btn-secondary" onclick="closeLoginModal()">
+                            Continue Browsing
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="nsa-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-users"></i>
+                        <span>NSA Network</span>
+                    </div>
+                    <p>Connecting Nepali students across American universities</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="donation.html">Donation & Help</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 NSA Network. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

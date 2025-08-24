@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - NSA Network</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 3rem 0;
+            color: white;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+        }
+        
+        .profile-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-info p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        .profile-content {
+            padding: 3rem 0;
+        }
+        
+        .profile-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-section h2 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .profile-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-time {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="nsa-header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>NSA Network</h2>
+                        <span>Nepali Student Associations</span>
+                    </div>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="home.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="donation.html" class="nav-link">Donation & Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <!-- User profile will be inserted here by JavaScript -->
+                </div>
+                <div class="hamburger" onclick="toggleSidebar()" title="Open Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">NSA Network</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="search.html" class="sidebar-link">
+                    <i class="fas fa-search"></i>
+                    Find NSA
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="donation.html" class="sidebar-link">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    Donation & Help
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="events.html" class="sidebar-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    Events Hub
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="profile.html" class="sidebar-link">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <main>
+        <!-- Profile Hero Section -->
+        <section class="profile-hero">
+            <div class="container">
+                <div class="profile-header">
+                    <img src="" alt="Profile Avatar" class="profile-avatar" id="profileAvatar">
+                    <div class="profile-info">
+                        <h1 id="profileName">User Name</h1>
+                        <p id="profileEmail">user@example.com</p>
+                        <p>Member since <span id="memberSince">January 2024</span></p>
+                        <button onclick="debugUserData()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 4px; cursor: pointer;">Debug User Data</button>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <span class="stat-number" id="donationsCount">0</span>
+                        <span class="stat-label">Donations Made</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalDonated">$0</span>
+                        <span class="stat-label">Total Donated</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="requestsHelped">0</span>
+                        <span class="stat-label">Requests Helped</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="communityRank">-</span>
+                        <span class="stat-label">Community Rank</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Content -->
+        <section class="profile-content">
+            <div class="container">
+                <!-- Personal Information -->
+                <div class="profile-section">
+                    <h2>
+                        <i class="fas fa-user"></i>
+                        Personal Information
+                    </h2>
+                    <form class="profile-form" id="personalInfoForm">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="university">University</label>
+                            <input type="text" id="university" name="university">
+                        </div>
+                        <div class="form-group">
+                            <label for="major">Major/Field of Study</label>
+                            <input type="text" id="major" name="major">
+                        </div>
+                        <div class="form-group">
+                            <label for="graduationYear">Graduation Year</label>
+                            <select id="graduationYear" name="graduationYear">
+                                <option value="">Select Year</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Current Location</label>
+                            <input type="text" id="location" name="location" placeholder="City, State">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself..."></textarea>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="profile-section">
+                    <h2>
+                        <i class="fas fa-clock"></i>
+                        Recent Activity
+                    </h2>
+                    <div id="activityList">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Logged in to NSA Network</div>
+                                <div class="activity-time" id="lastLoginTime">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="nsa-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-users"></i>
+                        <span>NSA Network</span>
+                    </div>
+                    <p>Connecting Nepali students across American universities</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="donation.html">Donation & Help</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 NSA Network. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Profile page specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeProfile();
+        });
+
+        function initializeProfile() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                // Redirect to login if not logged in
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userData);
+                populateProfile(user);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        function populateProfile(user) {
+            // Debug: Log the user data being used
+            console.log('Profile - User data received:', user);
+            
+            // Update profile header
+            document.getElementById('profileAvatar').src = user.avatar || 'https://via.placeholder.com/120x120/3b82f6/ffffff?text=U';
+            document.getElementById('profileName').textContent = user.name || 'Unknown User';
+            document.getElementById('profileEmail').textContent = user.email || 'No email provided';
+            
+            // Update member since date
+            const loginTime = user.loginTime ? new Date(user.loginTime) : new Date();
+            document.getElementById('memberSince').textContent = loginTime.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long'
+            });
+
+            // Update last login time
+            document.getElementById('lastLoginTime').textContent = loginTime.toLocaleString();
+
+            // Populate form fields
+            const nameParts = user.name.split(' ');
+            document.getElementById('firstName').value = nameParts[0] || '';
+            document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+            document.getElementById('email').value = user.email || '';
+            
+            // Load saved profile data if exists
+            const savedProfile = localStorage.getItem('userProfile');
+            if (savedProfile) {
+                try {
+                    const profile = JSON.parse(savedProfile);
+                    Object.keys(profile).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.value = profile[key];
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading saved profile:', error);
+                }
+            }
+
+            // Update stats (demo data)
+            document.getElementById('donationsCount').textContent = '3';
+            document.getElementById('totalDonated').textContent = '$75';
+            document.getElementById('requestsHelped').textContent = '2';
+            document.getElementById('communityRank').textContent = 'Helper';
+        }
+
+        // Handle form submission
+        document.getElementById('personalInfoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const profileData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                profileData[key] = value;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('userProfile', JSON.stringify(profileData));
+            
+            // Update user data
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            userData.name = `${profileData.firstName} ${profileData.lastName}`.trim();
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Show success message
+            showSuccessNotification('Profile updated successfully!');
+            
+            // Update navigation
+            checkLoginStatus();
+        });
+
+        function resetForm() {
+            document.getElementById('personalInfoForm').reset();
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            populateProfile(userData);
+        }
+
+        function showSuccessNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'success-notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function debugUserData() {
+            const userData = localStorage.getItem('userData');
+            console.log('Raw userData from localStorage:', userData);
+            
+            if (userData) {
+                try {
+                    const parsedData = JSON.parse(userData);
+                    console.log('Parsed userData:', parsedData);
+                    alert(`Current User Data:\n\nName: ${parsedData.name}\nEmail: ${parsedData.email}\nAvatar: ${parsedData.avatar}\nProvider: ${parsedData.provider}\nLogin Time: ${parsedData.loginTime}`);
+                } catch (error) {
+                    console.error('Error parsing userData:', error);
+                    alert('Error: Invalid user data in localStorage');
+                }
+            } else {
+                alert('No user data found in localStorage');
+            }
+        }
+    </script>
+</body>
+</html>

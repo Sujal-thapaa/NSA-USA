@@ -30,6 +30,9 @@ class NSAWebsite {
         this.setupEventListeners();
         this.updateStats();
         
+            // Check login status and update navigation
+        checkLoginStatus();
+        
         // Page-specific initializations
         if (this.currentPage === 'home') {
             this.renderPopularUniversities();
@@ -838,4 +841,162 @@ function toggleSidebar() {
             document.body.style.overflow = '';
         }
     }
+}
+
+// Toggle user menu
+function toggleUserMenu() {
+    const userMenu = document.getElementById('userMenu');
+    userMenu.classList.toggle('active');
+}
+
+// Close user menu when clicking outside
+document.addEventListener('click', function(event) {
+    const userProfile = document.getElementById('userProfile');
+    const userMenu = document.getElementById('userMenu');
+    
+    if (userProfile && !userProfile.contains(event.target)) {
+        userMenu.classList.remove('active');
+    }
+});
+
+// Check if user is logged in and update UI accordingly
+function checkLoginStatus() {
+    // Check if user data exists in localStorage (from login)
+    const userData = localStorage.getItem('userData');
+    
+    if (userData) {
+        try {
+            const user = JSON.parse(userData);
+            showUserProfile(user);
+            updateNavigationForLoggedInUser();
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            localStorage.removeItem('userData');
+            showLoginButton();
+        }
+    } else {
+        showLoginButton();
+        updateNavigationForLoggedOutUser();
+    }
+}
+
+// Update navigation for logged in users
+function updateNavigationForLoggedInUser() {
+    // Update all nav-actions sections across the site
+    const navActions = document.querySelectorAll('.nav-actions');
+    navActions.forEach(navAction => {
+        navAction.innerHTML = `
+            <div class="user-profile-nav" id="userProfile">
+                <button class="user-profile-btn" onclick="toggleUserMenu()">
+                    <img src="" alt="User Avatar" class="user-avatar" id="userAvatar">
+                    <span class="user-name" id="userName">User</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-menu" id="userMenu">
+                    <div class="user-menu-header">
+                        <img src="" alt="User Avatar" class="user-menu-avatar" id="userMenuAvatar">
+                        <div class="user-info">
+                            <span class="user-menu-name" id="userMenuName">User</span>
+                            <span class="user-menu-email" id="userEmail">user@example.com</span>
+                        </div>
+                    </div>
+                    <div class="user-menu-items">
+                        <a href="profile.html" class="user-menu-item">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                        <a href="settings.html" class="user-menu-item">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
+                        <a href="donation.html" class="user-menu-item">
+                            <i class="fas fa-heart"></i>
+                            My Donations
+                        </a>
+                        <div class="user-menu-divider"></div>
+                        <button class="user-menu-item logout-btn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// Update navigation for logged out users
+function updateNavigationForLoggedOutUser() {
+    const navActions = document.querySelectorAll('.nav-actions');
+    navActions.forEach(navAction => {
+        navAction.innerHTML = `
+            <a href="login.html" class="btn btn-primary" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </a>
+        `;
+    });
+}
+
+// Show user profile
+function showUserProfile(user) {
+    // Update user info in all instances
+    const userAvatars = document.querySelectorAll('#userAvatar, #userMenuAvatar');
+    const userNames = document.querySelectorAll('#userName, #userMenuName');
+    const userEmails = document.querySelectorAll('#userEmail');
+    
+    userAvatars.forEach(avatar => {
+        if (avatar) avatar.src = user.avatar || `https://via.placeholder.com/40x40/3b82f6/ffffff?text=${user.name?.charAt(0) || 'U'}`;
+    });
+    
+    userNames.forEach(name => {
+        if (name) name.textContent = user.name || 'User';
+    });
+    
+    userEmails.forEach(email => {
+        if (email) email.textContent = user.email || 'user@example.com';
+    });
+}
+
+// Show login button
+function showLoginButton() {
+    const userProfile = document.getElementById('userProfile');
+    const loginBtn = document.getElementById('loginBtn');
+    
+    if (userProfile && loginBtn) {
+        userProfile.style.display = 'none';
+        loginBtn.style.display = 'inline-flex';
+    }
+}
+
+// Logout function
+async function logout() {
+    try {
+        // Try to sign out with Supabase if available
+        if (typeof supabase !== 'undefined' && supabase.auth) {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+        }
+    } catch (error) {
+        console.error('Supabase sign out error:', error);
+        // Continue with local logout even if Supabase fails
+    }
+    
+    // Clear user data
+    localStorage.removeItem('userData');
+    localStorage.removeItem('userProfile');
+    localStorage.removeItem('userSettings');
+    localStorage.removeItem('rememberedUser');
+    
+    // Show login button
+    showLoginButton();
+    
+    // Close user menu
+    const userMenu = document.getElementById('userMenu');
+    if (userMenu) {
+        userMenu.classList.remove('active');
+    }
+    
+    // Redirect to login page
+    window.location.href = 'login.html';
 } 

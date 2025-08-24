@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation & Help - NSA Network Community Support</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="donation.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+
+</head>
+<body>
+    <header class="nsa-header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>NSA Network</h2>
+                        <span>Nepali Student Associations</span>
+                    </div>
+                </div>
+                                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="home.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="donation.html" class="nav-link">Donation & Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <button class="btn btn-primary" onclick="openDonateModal()">
+                        <i class="fas fa-heart"></i>
+                        Donate Now
+                    </button>
+                </div>
+                <div class="hamburger" onclick="toggleSidebar()" title="Open Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">NSA Network</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+                <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="search.html" class="sidebar-link">
+                    <i class="fas fa-search"></i>
+                    Find NSA
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="map.html" class="sidebar-link">
+                    <i class="fas fa-map-marked-alt"></i>
+                    Map View
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="chapter-map.html" class="sidebar-link">
+                    <i class="fas fa-map"></i>
+                    Chapter Map
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="events.html" class="sidebar-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    Events Hub
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="alumni.html" class="sidebar-link">
+                    <i class="fas fa-user-graduate"></i>
+                    Alumni Spotlight
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="scholarships.html" class="sidebar-link">
+                    <i class="fas fa-award"></i>
+                    Scholarships
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="mentorship.html" class="sidebar-link">
+                    <i class="fas fa-hands-helping"></i>
+                    Mentorship
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="resources.html" class="sidebar-link">
+                    <i class="fas fa-book"></i>
+                    Resource Center
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="news.html" class="sidebar-link">
+                    <i class="fas fa-newspaper"></i>
+                    News & Updates
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="donation.html" class="sidebar-link">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    Donation & Help
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="volunteer.html" class="sidebar-link">
+                    <i class="fas fa-heart"></i>
+                    Volunteer Board
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="marketplace.html" class="sidebar-link">
+                    <i class="fas fa-store"></i>
+                    Marketplace
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="donation-hero">
+            <div class="hero-background">
+                <div class="hero-pattern"></div>
+            </div>
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            Community <span class="highlight">Support Fund</span>
+                        </h1>
+                        <p class="hero-description">
+                            Together we stand stronger. Our community donation fund provides emergency financial support 
+                            to Nepali students and families during difficult times. Every dollar counts, every heart matters.
+                        </p>
+                        <div class="fund-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="totalFunds">$0</span>
+                                    <span class="stat-label">Total Raised</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="totalDonors">0</span>
+                                    <span class="stat-label">Community Donors</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-hands-helping"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="helpedFamilies">0</span>
+                                    <span class="stat-label">Families Helped</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary btn-large" onclick="openDonateModal()">
+                                <i class="fas fa-heart"></i>
+                                Donate $1
+                            </button>
+                            <button class="btn btn-secondary btn-large" onclick="openHelpRequestModal()">
+                                <i class="fas fa-plus"></i>
+                                Request Help
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="community-circle">
+                            <div class="circle-stat">
+                                <span class="target-number">50,000</span>
+                                <span class="target-label">Target Members</span>
+                            </div>
+                            <div class="circle-progress">
+                                <div class="progress-ring">
+                                    <svg width="200" height="200">
+                                        <circle cx="100" cy="100" r="90" stroke="#e2e8f0" stroke-width="8" fill="none"/>
+                                        <circle id="progressCircle" cx="100" cy="100" r="90" stroke="#10b981" stroke-width="8" 
+                                                fill="none" stroke-dasharray="565.48" stroke-dashoffset="565.48"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works">
+            <div class="container">
+                <div class="section-header">
+                    <h2>How Our Community Fund Works</h2>
+                    <p>Simple, transparent, and effective community support</p>
+                </div>
+                
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Community Donates</h3>
+                        <p>Each member contributes $1 to build our emergency fund. With 10,000-50,000 members, we create a powerful safety net.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>Emergency Occurs</h3>
+                        <p>When a community member faces death, accident, or severe hardship, they or their family can request help.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <h3>Review & Verify</h3>
+                        <p>Our volunteer committee reviews requests to ensure legitimacy and urgent need for community support.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <div class="step-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <h3>Funds Released</h3>
+                        <p>Approved requests receive immediate financial assistance from our community fund to help during difficult times.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Current Help Requests -->
+        <section class="active-requests">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Current Help Requests</h2>
+                    <p>Community members who need our support right now</p>
+                </div>
+                
+                <div id="helpRequestsGrid" class="requests-grid">
+                    <!-- Help requests will be loaded here -->
+                </div>
+                
+                <div class="load-more-container">
+                    <button class="btn btn-secondary" id="loadMoreRequests">
+                        <i class="fas fa-plus"></i>
+                        Load More Requests
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Success Stories -->
+        <section class="success-stories">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Success Stories</h2>
+                    <p>How our community has made a difference</p>
+                </div>
+                
+                <div class="stories-grid">
+                    <div class="story-card">
+                        <div class="story-header">
+                            <div class="story-type emergency">
+                                <i class="fas fa-ambulance"></i>
+                                Medical Emergency
+                            </div>
+                            <div class="story-amount">$2,500 Raised</div>
+                        </div>
+                        <div class="story-content">
+                            <h3>Helped Raj's Family During Medical Crisis</h3>
+                            <p>When Raj was hospitalized after a car accident, our community rallied together to support his family with medical expenses and living costs during his recovery.</p>
+                            <div class="story-meta">
+                                <span><i class="fas fa-users"></i> 156 donors</span>
+                                <span><i class="fas fa-calendar"></i> 2 weeks ago</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="story-card">
+                        <div class="story-header">
+                            <div class="story-type bereavement">
+                                <i class="fas fa-dove"></i>
+                                Bereavement Support
+                            </div>
+                            <div class="story-amount">$3,200 Raised</div>
+                        </div>
+                        <div class="story-content">
+                            <h3>Supported Maya's Family</h3>
+                            <p>After the sudden loss of Maya's father, our community provided financial support for funeral expenses and helped the family during their grieving period.</p>
+                            <div class="story-meta">
+                                <span><i class="fas fa-users"></i> 203 donors</span>
+                                <span><i class="fas fa-calendar"></i> 1 month ago</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="story-card">
+                        <div class="story-header">
+                            <div class="story-type emergency">
+                                <i class="fas fa-home"></i>
+                                Housing Crisis
+                            </div>
+                            <div class="story-amount">$1,800 Raised</div>
+                        </div>
+                        <div class="story-content">
+                            <h3>Emergency Housing for Sita</h3>
+                            <p>When Sita faced sudden eviction, our community fund helped her secure temporary housing and cover deposits for a new apartment.</p>
+                            <div class="story-meta">
+                                <span><i class="fas fa-users"></i> 89 donors</span>
+                                <span><i class="fas fa-calendar"></i> 3 weeks ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transparency Section -->
+        <section class="transparency-section">
+            <div class="container">
+                <div class="transparency-content">
+                    <div class="transparency-text">
+                        <h2>Complete Transparency</h2>
+                        <p>Every dollar is accounted for. We believe in complete transparency in how community funds are collected, managed, and distributed.</p>
+                        
+                        <div class="transparency-features">
+                            <div class="feature-item">
+                                <i class="fas fa-chart-line"></i>
+                                <div>
+                                    <h4>Real-time Tracking</h4>
+                                    <p>See exactly how much has been donated and how funds are being used</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <div>
+                                    <h4>Secure Management</h4>
+                                    <p>Funds are managed by elected community representatives with full oversight</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-file-alt"></i>
+                                <div>
+                                    <h4>Monthly Reports</h4>
+                                    <p>Detailed monthly reports showing all donations received and assistance provided</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary">
+                            <i class="fas fa-download"></i>
+                            View Latest Report
+                        </button>
+                    </div>
+                    <div class="transparency-visual">
+                        <div class="fund-breakdown">
+                            <h3>Fund Allocation</h3>
+                            <div class="breakdown-item">
+                                <span class="category">Emergency Medical</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 45%"></div>
+                                </div>
+                                <span class="percentage">45%</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="category">Bereavement Support</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 30%"></div>
+                                </div>
+                                <span class="percentage">30%</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="category">Housing Crisis</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 15%"></div>
+                                </div>
+                                <span class="percentage">15%</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="category">Administrative</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 10%"></div>
+                                </div>
+                                <span class="percentage">10%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Donate Modal with Stripe -->
+    <div id="donateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Support Our Community</h3>
+                <button class="close-btn" onclick="closeDonateModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="donation-options">
+                    <h4>Choose Your Contribution</h4>
+                    <div class="amount-buttons">
+                        <button class="amount-btn" data-amount="1">$1</button>
+                        <button class="amount-btn" data-amount="5">$5</button>
+                        <button class="amount-btn" data-amount="10">$10</button>
+                        <button class="amount-btn" data-amount="25">$25</button>
+                        <button class="amount-btn" data-amount="50">$50</button>
+                        <button class="amount-btn custom">Custom</button>
+                    </div>
+                    <div class="custom-amount" style="display: none;">
+                        <input type="number" id="customAmount" placeholder="Enter amount" min="1">
+                    </div>
+                </div>
+                
+                <form id="payment-form">
+                    <div class="form-group">
+                        <label for="donorName">Full Name</label>
+                        <input type="text" id="donorName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="donorEmail">Email Address</label>
+                        <input type="email" id="donorEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="donorUniversity">University/Organization</label>
+                        <input type="text" id="donorUniversity" name="university">
+                    </div>
+                    
+                    <!-- Payment Information -->
+                    <div class="payment-section">
+                        <h4>Payment Information</h4>
+                        <div class="payment-form-grid">
+                            <div class="form-group card-number-group">
+                                <label for="cardNumber">Card Number</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+                                    <div class="card-icons">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 24'%3E%3Cpath fill='%23005bac' d='M0 0h40v24H0z'/%3E%3Cpath fill='%23fff' d='M8 8h24v8H8z'/%3E%3C/svg%3E" alt="Visa" class="card-icon visa">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 24'%3E%3Cpath fill='%23eb001b' d='M0 0h40v24H0z'/%3E%3Cpath fill='%23ff5f00' d='M15 4h10v16H15z'/%3E%3Cpath fill='%23ff5f00' d='M20 12c0-3.314-2.686-6-6-6v12c3.314 0 6-2.686 6-6z'/%3E%3C/svg%3E" alt="Mastercard" class="card-icon mastercard">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 24'%3E%3Cpath fill='%230079be' d='M0 0h40v24H0z'/%3E%3Cpath fill='%23fff' d='M8 8h24v8H8z'/%3E%3C/svg%3E" alt="Amex" class="card-icon amex">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cardExpiry">Expiry Date</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardCVC">CVC</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="cardCVC" placeholder="123" maxlength="4" autocomplete="cc-csc">
+                                        <div class="cvc-help">
+                                            <i class="fas fa-question-circle" title="3 or 4 digits on the back of your card"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cardName">Name on Card</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="cardName" placeholder="John Doe" autocomplete="cc-name">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="card-errors" role="alert" class="error-message"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="anonymousDonation">
+                            Make this donation anonymous
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="donationMessage">Message (Optional)</label>
+                        <textarea id="donationMessage" rows="3" placeholder="Share why you're supporting the community..."></textarea>
+                    </div>
+                    
+                    <div class="donation-summary">
+                        <div class="summary-item">
+                            <span>Donation Amount:</span>
+                            <span id="donation-amount">$0.00</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>Total:</span>
+                            <span id="total-amount">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeDonateModal()">Cancel</button>
+                        <button type="submit" id="submit-button" class="btn btn-primary btn-donate">
+                            <span id="button-text">
+                                <i class="fas fa-heart"></i>
+                                Donate Now
+                            </span>
+                            <div id="spinner" class="spinner hidden"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content success-modal">
+            <div class="modal-header">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Thank You for Your Donation!</h3>
+                <button class="close-btn" onclick="closeSuccessModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="success-content">
+                    <p>Your donation has been processed successfully. You will receive a confirmation email shortly.</p>
+                    <div class="donation-details">
+                        <div class="detail-item">
+                            <span>Amount:</span>
+                            <span id="success-amount">$0.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Transaction ID:</span>
+                            <span id="success-transaction">-</span>
+                        </div>
+                    </div>
+                    <p class="thank-you-message">Your contribution helps strengthen our community and provides vital support to those in need. Together, we make a difference!</p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="closeSuccessModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Request Modal -->
+    <div id="helpRequestModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Request Community Support</h3>
+                <button class="close-btn" onclick="closeHelpRequestModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="request-info">
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <p><strong>Important:</strong> Help requests are reviewed by our volunteer committee. Please provide accurate information and documentation to support your request.</p>
+                    </div>
+                </div>
+                
+                <form id="helpRequestForm">
+                    <div class="form-section">
+                        <h4>Personal Information</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="requestorName">Full Name *</label>
+                                <input type="text" id="requestorName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="requestorPhone">Phone Number *</label>
+                                <input type="tel" id="requestorPhone" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="requestorEmail">Email Address *</label>
+                                <input type="email" id="requestorEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="requestorLocation">Current Location *</label>
+                                <input type="text" id="requestorLocation" placeholder="City, State" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4>Emergency Details</h4>
+                        <div class="form-group">
+                            <label for="emergencyType">Type of Emergency *</label>
+                            <select id="emergencyType" required>
+                                <option value="">Select emergency type</option>
+                                <option value="medical">Medical Emergency</option>
+                                <option value="death">Death in Family</option>
+                                <option value="accident">Accident</option>
+                                <option value="housing">Housing Crisis</option>
+                                <option value="financial">Financial Hardship</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="emergencyDescription">Detailed Description *</label>
+                            <textarea id="emergencyDescription" rows="4" required 
+                                placeholder="Please provide detailed information about your situation..."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="amountNeeded">Amount Needed *</label>
+                                <input type="number" id="amountNeeded" min="1" required placeholder="$">
+                            </div>
+                            <div class="form-group">
+                                <label for="urgencyLevel">Urgency Level *</label>
+                                <select id="urgencyLevel" required>
+                                    <option value="">Select urgency</option>
+                                    <option value="critical">Critical (24-48 hours)</option>
+                                    <option value="urgent">Urgent (1 week)</option>
+                                    <option value="moderate">Moderate (2-4 weeks)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4>Supporting Documentation</h4>
+                        <div class="form-group">
+                            <label for="supportingDocs">Upload Documents</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="supportingDocs" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                <div class="file-upload-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Click to upload medical bills, death certificates, police reports, etc.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="additionalInfo">Additional Information</label>
+                            <textarea id="additionalInfo" rows="3" 
+                                placeholder="Any other information that might help us understand your situation..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="verifyTruthfulness" required>
+                                I verify that all information provided is truthful and accurate
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="agreeToReview" required>
+                                I understand that my request will be reviewed by the community committee
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeHelpRequestModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="nsa-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-users"></i>
+                        <span>NSA Network</span>
+                    </div>
+                    <p>Connecting Nepali students across American universities</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="donation.html">Donation & Help</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 NSA Network. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="donation.js"></script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSA Network - Complete Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .register-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .register-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .register-form {
+            padding: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input:readonly {
+            background: #f9fafb;
+            color: #6b7280;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-select {
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .error-message {
+            background: #ef4444;
+        }
+
+        .success-message {
+            background: #10b981;
+        }
+
+        .error-content, .success-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .register-container {
+                margin: 1rem;
+            }
+
+            .register-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+            <h1>Complete Your Profile</h1>
+            <p>Help us connect you with the right community and opportunities</p>
+        </div>
+
+        <form class="register-form" id="registrationForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label" for="firstName">
+                        First Name <span class="required">*</span>
+                    </label>
+                    <input type="text" id="firstName" name="firstName" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="lastName">
+                        Last Name <span class="required">*</span>
+                    </label>
+                    <input type="text" id="lastName" name="lastName" class="form-input" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label" for="email">
+                        Email Address
+                    </label>
+                    <input type="email" id="email" name="email" class="form-input" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="phone">
+                        Phone Number
+                    </label>
+                    <input type="tel" id="phone" name="phone" class="form-input" placeholder="(555) 123-4567">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="university">
+                        University <span class="required">*</span>
+                    </label>
+                    <input type="text" id="university" name="university" class="form-input" placeholder="e.g., University of California, Berkeley" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="major">
+                        Major / Field of Study
+                    </label>
+                    <input type="text" id="major" name="major" class="form-input" placeholder="e.g., Computer Science">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="graduationYear">
+                        Graduation Year
+                    </label>
+                    <select id="graduationYear" name="graduationYear" class="form-select">
+                        <option value="">Select year</option>
+                        <!-- Years will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="location">
+                        Current Location
+                    </label>
+                    <input type="text" id="location" name="location" class="form-input" placeholder="e.g., San Francisco, CA">
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label" for="bio">
+                        Bio (Optional)
+                    </label>
+                    <textarea id="bio" name="bio" class="form-textarea" placeholder="Tell us a bit about yourself, your interests, and what you hope to gain from the NSA Network community..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <i class="fas fa-user-plus"></i> Complete Registration
+            </button>
+        </form>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in
+            const { user } = await supabaseAuth.getCurrentUser();
+            
+            if (!user) {
+                supabaseUtils.showError('Please log in first');
+                setTimeout(() => {
+                    window.location.href = 'auth-index.html';
+                }, 1000);
+                return;
+            }
+
+            currentUser = user;
+            
+            // Pre-fill email from auth
+            document.getElementById('email').value = user.email;
+            
+            // Populate graduation years
+            populateGraduationYears();
+            
+            // Handle form submission
+            document.getElementById('registrationForm').addEventListener('submit', handleRegistration);
+        });
+
+        function populateGraduationYears() {
+            const currentYear = new Date().getFullYear();
+            const graduationSelect = document.getElementById('graduationYear');
+            
+            // Add years from current year to 10 years in the future
+            for (let year = currentYear; year <= currentYear + 10; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                graduationSelect.appendChild(option);
+            }
+        }
+
+        async function handleRegistration(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            
+            try {
+                supabaseUtils.showLoading(submitBtn, 'Creating Profile...');
+                
+                // Get form data
+                const formData = new FormData(event.target);
+                const profileData = {
+                    user_id: currentUser.id,
+                    first_name: formData.get('firstName').trim(),
+                    last_name: formData.get('lastName').trim(),
+                    email: formData.get('email'),
+                    phone: formData.get('phone').trim(),
+                    university: formData.get('university').trim(),
+                    major: formData.get('major').trim(),
+                    graduation_year: formData.get('graduationYear') ? parseInt(formData.get('graduationYear')) : null,
+                    current_location: formData.get('location').trim(),
+                    bio: formData.get('bio').trim(),
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+
+                // Validate required fields
+                if (!profileData.first_name || !profileData.last_name || !profileData.university) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                // Create profile in database
+                const { data, error } = await supabaseDB.createProfile(profileData);
+                
+                if (error) {
+                    throw error;
+                }
+
+                supabaseUtils.showSuccess('Profile created successfully!');
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                supabaseUtils.showError(error.message || 'Registration failed. Please try again.');
+                supabaseUtils.resetButton(submitBtn, originalText);
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseAuth.signOut();
+                if (error) throw error;
+                
+                window.location.href = 'auth-index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                supabaseUtils.showError('Logout failed');
+            }
+        }
+    </script>
+</body>
+</html>

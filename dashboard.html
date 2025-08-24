@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSA Network - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo h1 {
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .main-content, .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #374151;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .profile-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .profile-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .profile-value {
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1rem;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #374151;
+        }
+
+        .action-btn:hover {
+            background: #e5e7eb;
+            transform: translateX(4px);
+        }
+
+        .upcoming-events {
+            list-style: none;
+        }
+
+        .event-item {
+            padding: 1rem;
+            border-left: 4px solid #667eea;
+            background: #f8fafc;
+            margin-bottom: 0.75rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .event-date {
+            font-size: 0.875rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .event-title {
+            color: #374151;
+            font-weight: 600;
+            margin: 0.25rem 0;
+        }
+
+        .event-location {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .error-message, .success-message {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .error-message {
+            background: #ef4444;
+        }
+
+        .success-message {
+            background: #10b981;
+        }
+
+        .error-content, .success-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-container {
+                padding: 1rem;
+            }
+
+            .welcome-section {
+                padding: 2rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .user-name {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>NSA Network</h1>
+            </div>
+            <div class="nav-actions">
+                <div class="user-info">
+                    <img src="" alt="User Avatar" class="user-avatar" id="userAvatar">
+                    <span class="user-name" id="userName">Loading...</span>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1 id="welcomeMessage">Welcome to NSA Network!</h1>
+            <p>Connect, learn, and grow with the Nepali student community across America</p>
+            
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-label">Community Members</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-label">Upcoming Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-label">Universities Represented</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="main-content">
+                <div class="card">
+                    <h2>
+                        <i class="fas fa-user"></i>
+                        Your Profile
+                    </h2>
+                    <div class="profile-summary" id="profileSummary">
+                        <div class="profile-item">
+                            <span class="profile-label">University</span>
+                            <span class="profile-value" id="profileUniversity">Loading...</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Major</span>
+                            <span class="profile-value" id="profileMajor">Loading...</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Graduation Year</span>
+                            <span class="profile-value" id="profileGradYear">Loading...</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Location</span>
+                            <span class="profile-value" id="profileLocation">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>
+                        <i class="fas fa-calendar-alt"></i>
+                        Upcoming Events
+                    </h2>
+                    <ul class="upcoming-events">
+                        <li class="event-item">
+                            <div class="event-date">Dec 15, 2024</div>
+                            <div class="event-title">Nepali New Year Celebration</div>
+                            <div class="event-location">San Francisco, CA</div>
+                        </li>
+                        <li class="event-item">
+                            <div class="event-date">Jan 20, 2025</div>
+                            <div class="event-title">Career Networking Session</div>
+                            <div class="event-location">Virtual Event</div>
+                        </li>
+                        <li class="event-item">
+                            <div class="event-date">Feb 10, 2025</div>
+                            <div class="event-title">Cultural Workshop</div>
+                            <div class="event-location">New York, NY</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="card">
+                    <h2>
+                        <i class="fas fa-bolt"></i>
+                        Quick Actions
+                    </h2>
+                    <div class="quick-actions">
+                        <a href="events.html" class="action-btn">
+                            <i class="fas fa-calendar-plus"></i>
+                            Browse Events
+                        </a>
+                        <a href="mentorship.html" class="action-btn">
+                            <i class="fas fa-users"></i>
+                            Find Mentors
+                        </a>
+                        <a href="scholarships.html" class="action-btn">
+                            <i class="fas fa-graduation-cap"></i>
+                            View Scholarships
+                        </a>
+                        <a href="resources.html" class="action-btn">
+                            <i class="fas fa-book"></i>
+                            Access Resources
+                        </a>
+                        <a href="profile.html" class="action-btn">
+                            <i class="fas fa-edit"></i>
+                            Edit Profile
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>
+                        <i class="fas fa-bullhorn"></i>
+                        Latest News
+                    </h2>
+                    <div style="color: #6b7280; font-style: italic;">
+                        Stay tuned for updates from the NSA Network community!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let userProfile = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadDashboard();
+        });
+
+        async function loadDashboard() {
+            try {
+                // Check if user is logged in
+                const { user } = await supabaseAuth.getCurrentUser();
+                
+                if (!user) {
+                    supabaseUtils.showError('Please log in first');
+                    setTimeout(() => {
+                        window.location.href = 'auth-index.html';
+                    }, 1000);
+                    return;
+                }
+
+                currentUser = user;
+
+                // Load user profile
+                const { data: profile, error } = await supabaseDB.getProfile(user.id);
+                
+                if (error || !profile) {
+                    supabaseUtils.showError('Profile not found. Please complete registration.');
+                    setTimeout(() => {
+                        window.location.href = 'register.html';
+                    }, 1000);
+                    return;
+                }
+
+                userProfile = profile;
+                
+                // Populate dashboard with user data
+                populateDashboard();
+                
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+                supabaseUtils.showError('Failed to load dashboard');
+            }
+        }
+
+        function populateDashboard() {
+            // Update navigation
+            document.getElementById('userName').textContent = `${userProfile.first_name} ${userProfile.last_name}`;
+            document.getElementById('userAvatar').src = currentUser.user_metadata?.avatar_url || 
+                `https://ui-avatars.com/api/?name=${userProfile.first_name}+${userProfile.last_name}&background=667eea&color=fff&size=40`;
+
+            // Update welcome message
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${userProfile.first_name}!`;
+
+            // Update profile summary
+            document.getElementById('profileUniversity').textContent = userProfile.university || 'Not specified';
+            document.getElementById('profileMajor').textContent = userProfile.major || 'Not specified';
+            document.getElementById('profileGradYear').textContent = userProfile.graduation_year || 'Not specified';
+            document.getElementById('profileLocation').textContent = userProfile.current_location || 'Not specified';
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseAuth.signOut();
+                if (error) throw error;
+                
+                supabaseUtils.showSuccess('Logged out successfully');
+                setTimeout(() => {
+                    window.location.href = 'auth-index.html';
+                }, 1000);
+            } catch (error) {
+                console.error('Logout error:', error);
+                supabaseUtils.showError('Logout failed');
+            }
+        }
+    </script>
+</body>
+</html>
