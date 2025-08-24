@@ -321,12 +321,24 @@
                 // Handle test connection
                 testConnectionBtn.addEventListener('click', handleTestConnection);
 
-                // Listen for auth state changes
-                supabaseAuth.onAuthStateChange(async (event, session) => {
-                    if (event === 'SIGNED_IN' && session) {
-                        await handleExistingUser(session.user);
-                    }
-                });
+                            // Listen for auth state changes
+            supabaseAuth.onAuthStateChange(async (event, session) => {
+                console.log('Auth state changed:', event, session);
+                if (event === 'SIGNED_IN' && session) {
+                    await handleExistingUser(session.user);
+                }
+            });
+            
+            // Check if we're returning from OAuth (URL has access_token or error)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('access_token') || urlParams.has('error')) {
+                console.log('Returning from OAuth, checking auth state...');
+                // Force check current user
+                const { user } = await supabaseAuth.getCurrentUser();
+                if (user) {
+                    await handleExistingUser(user);
+                }
+            }
             });
 
             async function handleGoogleLogin() {
@@ -363,10 +375,10 @@
                     }
                     
                     if (profile) {
-                        // User has a profile, redirect to dashboard
+                        // User has a profile, redirect to home page
                         supabaseUtils.showSuccess('Welcome back!');
                         setTimeout(() => {
-                            window.location.href = 'dashboard.html';
+                            window.location.href = 'home.html';
                         }, 1000);
                     } else {
                         // User doesn't have a profile, redirect to registration

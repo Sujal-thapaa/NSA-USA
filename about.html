@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
 </head>
 <body>
     <header class="nsa-header">
         <nav class="navbar">
             <div class="nav-container">
-                <div class="nav-logo">
+                <div class="nav-logo" onclick="toggleUserProfileMenu()">
                     <div class="logo-icon">
                         <i class="fas fa-users"></i>
                     </div>
@@ -40,6 +42,38 @@
                         <i class="fas fa-plus"></i>
                         Add NSA
                     </button>
+                    <div id="userProfile" class="user-profile" style="display: none;">
+                        <div class="user-avatar" onclick="toggleUserMenu()">
+                            <img id="userAvatar" src="https://via.placeholder.com/40x40/3b82f6/ffffff?text=U" alt="User Avatar">
+                        </div>
+                        <div class="user-menu" id="userMenu">
+                            <div class="user-info">
+                                <img id="userMenuAvatar" src="https://via.placeholder.com/60x60/3b82f6/ffffff?text=U" alt="User Avatar">
+                                <div class="user-details">
+                                    <span id="userName">User Name</span>
+                                    <span id="userEmail">user@example.com</span>
+                                </div>
+                            </div>
+                            <div class="menu-items">
+                                <a href="profile.html" class="menu-item">
+                                    <i class="fas fa-user"></i>
+                                    Profile
+                                </a>
+                                <a href="settings.html" class="menu-item">
+                                    <i class="fas fa-cog"></i>
+                                    Settings
+                                </a>
+                                <a href="#" class="menu-item" onclick="handleLogout()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="auth-index.html" class="btn btn-secondary" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </a>
                 </div>
                 <div class="hamburger" onclick="toggleSidebar()">
                     <span class="bar"></span>
@@ -453,6 +487,132 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        let currentUser = null;
+        let userProfile = null;
+
+        // Check login status when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkLoginStatus();
+        });
+
+        async function checkLoginStatus() {
+            try {
+                // Check if user is logged in with Supabase
+                const { user } = await supabaseAuth.getCurrentUser();
+                
+                if (user) {
+                    currentUser = user;
+                    
+                    // Load user profile from database
+                    const { data: profile, error } = await supabaseDB.getProfile(user.id);
+                    
+                    if (profile && !error) {
+                        userProfile = profile;
+                        showUserProfile();
+                    } else {
+                        // User doesn't have a profile, show login button
+                        showLoginButton();
+                    }
+                } else {
+                    showLoginButton();
+                }
+                
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                showLoginButton();
+            }
+        }
+
+        function showUserProfile() {
+            const userProfileDiv = document.getElementById('userProfile');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (userProfileDiv && loginBtn) {
+                userProfileDiv.style.display = 'block';
+                loginBtn.style.display = 'none';
+                
+                // Update user avatar and info
+                const avatarUrl = currentUser.user_metadata?.avatar_url || 
+                    `https://ui-avatars.com/api/?name=${userProfile.first_name}+${userProfile.last_name}&background=667eea&color=fff&size=40`;
+                
+                document.getElementById('userAvatar').src = avatarUrl;
+                document.getElementById('userMenuAvatar').src = avatarUrl.replace('size=40', 'size=60');
+                document.getElementById('userName').textContent = `${userProfile.first_name} ${userProfile.last_name}`;
+                document.getElementById('userEmail').textContent = userProfile.email;
+            }
+        }
+
+        function showLoginButton() {
+            const userProfileDiv = document.getElementById('userProfile');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (userProfileDiv && loginBtn) {
+                userProfileDiv.style.display = 'none';
+                loginBtn.style.display = 'inline-flex';
+            }
+        }
+
+        function toggleUserProfileMenu() {
+            // Toggle user menu when logo is clicked
+            toggleUserMenu();
+        }
+
+        function toggleUserMenu() {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu) {
+                userMenu.classList.toggle('active');
+            }
+        }
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userProfileDiv = document.getElementById('userProfile');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (userProfileDiv && !userProfileDiv.contains(event.target)) {
+                if (userMenu) {
+                    userMenu.classList.remove('active');
+                }
+            }
+        });
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseAuth.signOut();
+                if (error) throw error;
+                
+                // Redirect to login page
+                window.location.href = 'auth-index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Logout failed. Please try again.');
+            }
+        }
+
+        // Existing functions
+        function openSubmitForm() {
+            document.getElementById('submitModal').style.display = 'block';
+        }
+
+        function closeSubmitForm() {
+            document.getElementById('submitModal').style.display = 'none';
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+            } else {
+                sidebar.classList.add('active');
+                overlay.classList.remove('active');
+                overlay.style.display = 'block';
+            }
+        }
+    </script>
+    <script src="nav-updater.js"></script>
 </body>
 </html> 

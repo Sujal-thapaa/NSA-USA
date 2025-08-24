@@ -12,7 +12,7 @@ const auth = {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: 'https://tnjdqipuegeuzpfbrxmv.supabase.co/auth/v1/callback'
+                redirectTo: window.location.origin + '/auth-index.html'
             }
         });
         return { data, error };

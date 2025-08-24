@@ -277,7 +277,8 @@
                         <h1 id="profileName">User Name</h1>
                         <p id="profileEmail">user@example.com</p>
                         <p>Member since <span id="memberSince">January 2024</span></p>
-                        <button onclick="debugUserData()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 4px; cursor: pointer;">Debug User Data</button>
+                        <button onclick="debugUserData()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 4px; cursor: pointer; margin-right: 1rem;">Debug User Data</button>
+                        <button onclick="handleLogout()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.3); color: white; border-radius: 4px; cursor: pointer;">Logout</button>
                     </div>
                 </div>
                 
@@ -419,70 +420,85 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
     <script>
         // Profile page specific JavaScript
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeProfile();
+        let currentUser = null;
+        let userProfile = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initializeProfile();
         });
 
-        function initializeProfile() {
-            const userData = localStorage.getItem('userData');
-            if (!userData) {
-                // Redirect to login if not logged in
-                window.location.href = 'login.html';
-                return;
-            }
-
+        async function initializeProfile() {
             try {
-                const user = JSON.parse(userData);
-                populateProfile(user);
+                // Check if user is logged in with Supabase
+                const { user } = await supabaseAuth.getCurrentUser();
+                
+                if (!user) {
+                    // Redirect to login if not logged in
+                    window.location.href = 'auth-index.html';
+                    return;
+                }
+
+                currentUser = user;
+
+                // Load user profile from database
+                const { data: profile, error } = await supabaseDB.getProfile(user.id);
+                
+                if (error || !profile) {
+                    // User doesn't have a profile, redirect to registration
+                    window.location.href = 'register.html';
+                    return;
+                }
+
+                userProfile = profile;
+                
+                // Populate profile with real data
+                populateProfile(profile);
+                
             } catch (error) {
                 console.error('Error loading user data:', error);
-                window.location.href = 'login.html';
+                window.location.href = 'auth-index.html';
             }
         }
 
-        function populateProfile(user) {
-            // Debug: Log the user data being used
-            console.log('Profile - User data received:', user);
+        function populateProfile(profile) {
+            // Debug: Log the profile data being used
+            console.log('Profile - Profile data received:', profile);
+            console.log('Profile - Current user:', currentUser);
             
-            // Update profile header
-            document.getElementById('profileAvatar').src = user.avatar || 'https://via.placeholder.com/120x120/3b82f6/ffffff?text=U';
-            document.getElementById('profileName').textContent = user.name || 'Unknown User';
-            document.getElementById('profileEmail').textContent = user.email || 'No email provided';
+            // Update profile header with real data
+            const avatarUrl = currentUser.user_metadata?.avatar_url || 
+                `https://ui-avatars.com/api/?name=${profile.first_name}+${profile.last_name}&background=667eea&color=fff&size=120`;
+            
+            document.getElementById('profileAvatar').src = avatarUrl;
+            document.getElementById('profileName').textContent = `${profile.first_name} ${profile.last_name}`;
+            document.getElementById('profileEmail').textContent = profile.email;
             
             // Update member since date
-            const loginTime = user.loginTime ? new Date(user.loginTime) : new Date();
-            document.getElementById('memberSince').textContent = loginTime.toLocaleDateString('en-US', {
+            const createdDate = profile.created_at ? new Date(profile.created_at) : new Date();
+            document.getElementById('memberSince').textContent = createdDate.toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long'
             });
 
             // Update last login time
-            document.getElementById('lastLoginTime').textContent = loginTime.toLocaleString();
-
-            // Populate form fields
-            const nameParts = user.name.split(' ');
-            document.getElementById('firstName').value = nameParts[0] || '';
-            document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
-            document.getElementById('email').value = user.email || '';
-            
-            // Load saved profile data if exists
-            const savedProfile = localStorage.getItem('userProfile');
-            if (savedProfile) {
-                try {
-                    const profile = JSON.parse(savedProfile);
-                    Object.keys(profile).forEach(key => {
-                        const element = document.getElementById(key);
-                        if (element) {
-                            element.value = profile[key];
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error loading saved profile:', error);
-                }
+            if (document.getElementById('lastLoginTime')) {
+                document.getElementById('lastLoginTime').textContent = new Date().toLocaleString();
             }
+
+            // Populate form fields with database data
+            document.getElementById('firstName').value = profile.first_name || '';
+            document.getElementById('lastName').value = profile.last_name || '';
+            document.getElementById('email').value = profile.email || '';
+            document.getElementById('phone').value = profile.phone || '';
+            document.getElementById('university').value = profile.university || '';
+            document.getElementById('major').value = profile.major || '';
+            document.getElementById('graduationYear').value = profile.graduation_year || '';
+            document.getElementById('location').value = profile.current_location || '';
+            document.getElementById('bio').value = profile.bio || '';
 
             // Update stats (demo data)
             document.getElementById('donationsCount').textContent = '3';
@@ -492,35 +508,59 @@
         }
 
         // Handle form submission
-        document.getElementById('personalInfoForm').addEventListener('submit', function(e) {
+        document.getElementById('personalInfoForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(e.target);
-            const profileData = {};
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
             
-            for (let [key, value] of formData.entries()) {
-                profileData[key] = value;
+            try {
+                submitBtn.innerHTML = 'Saving...';
+                submitBtn.disabled = true;
+                
+                const formData = new FormData(e.target);
+                const profileData = {
+                    first_name: formData.get('firstName').trim(),
+                    last_name: formData.get('lastName').trim(),
+                    email: formData.get('email'),
+                    phone: formData.get('phone').trim(),
+                    university: formData.get('university').trim(),
+                    major: formData.get('major').trim(),
+                    graduation_year: formData.get('graduationYear') ? parseInt(formData.get('graduationYear')) : null,
+                    current_location: formData.get('location').trim(),
+                    bio: formData.get('bio').trim(),
+                    updated_at: new Date().toISOString()
+                };
+
+                // Update profile in database
+                const { data, error } = await supabaseDB.updateProfile(currentUser.id, profileData);
+                
+                if (error) {
+                    throw error;
+                }
+
+                // Update local profile data
+                userProfile = { ...userProfile, ...profileData };
+                
+                // Show success message
+                showSuccessNotification('Profile updated successfully!');
+                
+                // Refresh the profile display
+                populateProfile(userProfile);
+                
+            } catch (error) {
+                console.error('Profile update error:', error);
+                showSuccessNotification('Failed to update profile: ' + error.message);
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             }
-            
-            // Save to localStorage
-            localStorage.setItem('userProfile', JSON.stringify(profileData));
-            
-            // Update user data
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            userData.name = `${profileData.firstName} ${profileData.lastName}`.trim();
-            localStorage.setItem('userData', JSON.stringify(userData));
-            
-            // Show success message
-            showSuccessNotification('Profile updated successfully!');
-            
-            // Update navigation
-            checkLoginStatus();
         });
 
         function resetForm() {
             document.getElementById('personalInfoForm').reset();
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            populateProfile(userData);
+            // Repopulate with current profile data
+            populateProfile(userProfile);
         }
 
         function showSuccessNotification(message) {
@@ -548,6 +588,19 @@
             setTimeout(() => {
                 notification.remove();
             }, 3000);
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseAuth.signOut();
+                if (error) throw error;
+                
+                // Redirect to login page
+                window.location.href = 'auth-index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Logout failed. Please try again.');
+            }
         }
 
         function debugUserData() {
