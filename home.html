@@ -100,12 +100,7 @@
                     Find NSA
                 </a>
             </li>
-            <li class="sidebar-item">
-                <a href="map.html" class="sidebar-link">
-                    <i class="fas fa-map-marked-alt"></i>
-                    Map View
-                </a>
-            </li>
+            
             <li class="sidebar-item">
                 <a href="chapter-map.html" class="sidebar-link">
                     <i class="fas fa-map"></i>
@@ -222,7 +217,7 @@
                                 <i class="fas fa-search"></i>
                                 Find Your NSA
                             </a>
-                            <a href="map.html" class="btn btn-secondary btn-large">
+                            <a href="chapter-map.html" class="btn btn-secondary btn-large">
                                 <i class="fas fa-map"></i>
                                 View Map
                             </a>
@@ -314,7 +309,7 @@
                         <p>Search for NSA chapters at your university or nearby institutions</p>
                     </a>
                     
-                    <a href="map.html" class="action-card">
+                    <a href="chapter-map.html" class="action-card">
                         <div class="action-icon">
                             <i class="fas fa-map"></i>
                         </div>
@@ -782,6 +777,149 @@
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Floating AI Search Button -->
+    <div class="ai-search-float" onclick="window.location.href='ai-search.html'" title="AI Search">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <style>
+        .ai-search-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        .ai-search-float:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .ai-search-float i {
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-search-float:hover i {
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.7);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .ai-search-float {
+                width: 50px;
+                height: 50px;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .ai-search-float i {
+                font-size: 20px;
+            }
+        }
+    </style>
+
     <script src="nav-updater.js"></script>
+    
+    <script>
+        // Load NSA data and update statistics
+        async function loadNSAStats() {
+            try {
+                const response = await fetch('nsa_data.json');
+                const nsaData = await response.json();
+                
+                // Calculate statistics
+                const totalNSAs = nsaData.length;
+                const states = [...new Set(nsaData.map(nsa => {
+                    const location = nsa.location || '';
+                    const parts = location.split(',');
+                    return parts[parts.length - 1]?.trim();
+                }).filter(Boolean))];
+                const universities = [...new Set(nsaData.map(nsa => nsa.university))];
+                
+                // Update the display with animation
+                animateCounter('totalUniversities', universities.length);
+                animateCounter('totalStates', states.length);
+                animateCounter('totalNSAs', totalNSAs);
+                
+                console.log(`Updated home page stats: ${totalNSAs} NSAs, ${states.length} states, ${universities.length} universities`);
+                
+            } catch (error) {
+                console.error('Error loading NSA statistics:', error);
+                // Set fallback values
+                document.getElementById('totalUniversities').textContent = '59';
+                document.getElementById('totalStates').textContent = '32';
+                document.getElementById('totalNSAs').textContent = '59';
+            }
+        }
+        
+        // Animate counter from 0 to target value
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const duration = 2000; // 2 seconds
+            const startTime = performance.now();
+            
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function for smooth animation
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                const currentValue = Math.floor(easeOutQuart * targetValue);
+                
+                element.textContent = currentValue;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = targetValue; // Ensure final value is exact
+                }
+            }
+            
+            requestAnimationFrame(updateCounter);
+        }
+        
+        // Initialize statistics when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add a small delay to let the page render first
+            setTimeout(loadNSAStats, 500);
+        });
+    </script>
 </body>
 </html> 

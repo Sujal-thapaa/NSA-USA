@@ -69,15 +69,9 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="map.html" class="sidebar-link">
-                    <i class="fas fa-map-marked-alt"></i>
-                    Map View
-                </a>
-            </li>
-            <li class="sidebar-item">
                 <a href="chapter-map.html" class="sidebar-link">
                     <i class="fas fa-map"></i>
-                    Chapter Map
+                    Interactive Map
                 </a>
             </li>
             <li class="sidebar-item">
@@ -337,7 +331,7 @@
                     <ul>
                         <li><a href="home.html">Home</a></li>
                         <li><a href="search.html">Find NSA</a></li>
-                        <li><a href="map.html">Map View</a></li>
+                        <li><a href="chapter-map.html">Interactive Map</a></li>
                         <li><a href="events.html">Events Hub</a></li>
                     </ul>
                 </div>
@@ -357,7 +351,680 @@
         </div>
     </footer>
 
+    <!-- Floating AI Search Button -->
+    <div class="ai-search-float" onclick="window.location.href='ai-search.html'" title="AI Search">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <style>
+        /* NSA Grid Layout - 3 per row */
+        .nsa-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 24px;
+            padding: 20px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nsa-grid.active {
+            display: grid;
+        }
+
+        .nsa-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .nsa-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .card-header {
+            padding: 24px 24px 16px 24px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .university-info {
+            margin-bottom: 12px;
+        }
+
+        .nsa-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+        }
+
+        .university-name {
+            font-size: 16px;
+            color: #4a5568;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .social-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .social-count i {
+            font-size: 12px;
+        }
+
+        .card-body {
+            padding: 20px 24px 24px 24px;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .location, .president, .contact {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+
+        .location i, .president i, .contact i {
+            color: #667eea;
+            width: 16px;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 8px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .social-link.instagram {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+
+        .social-link.facebook {
+            background: #1877f2;
+            color: white;
+        }
+
+        .social-link.email {
+            background: #34d399;
+            color: white;
+        }
+
+        .social-link:hover {
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .nsa-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nsa-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding: 16px 0;
+            }
+            
+            .nsa-card {
+                margin: 0 16px;
+            }
+        }
+
+        /* No results styling */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #4a5568;
+        }
+
+        .no-results i {
+            font-size: 48px;
+            color: #cbd5e0;
+            margin-bottom: 16px;
+        }
+
+        .no-results h3 {
+            font-size: 24px;
+            margin: 0 0 8px 0;
+            color: #2d3748;
+        }
+
+        .no-results p {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .ai-search-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        .ai-search-float:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .ai-search-float i {
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-search-float:hover i {
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.7);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .ai-search-float {
+                width: 50px;
+                height: 50px;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .ai-search-float i {
+                font-size: 20px;
+            }
+        }
+    </style>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="nav-updater.js"></script>
+    
+    <script>
+        // Global variables
+        let nsaData = [];
+        let filteredData = [];
+        let map = null;
+        let currentView = 'grid';
+
+        // Load NSA data from JSON file
+        async function loadNSAData() {
+            try {
+                const response = await fetch('nsa_data.json');
+                nsaData = await response.json();
+                filteredData = [...nsaData];
+                
+                console.log(`Loaded ${nsaData.length} NSA chapters`);
+                
+                // Initialize the page
+                initializePage();
+                displayResults();
+                populateFilters();
+                updateStats();
+                displayPopularUniversities();
+                
+            } catch (error) {
+                console.error('Error loading NSA data:', error);
+                document.getElementById('nsaGrid').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Unable to load NSA data</h3>
+                        <p>Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize page
+        function initializePage() {
+            // Set up event listeners
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('stateFilter').addEventListener('change', handleFilter);
+            document.getElementById('sortBy').addEventListener('change', handleSort);
+            
+            // View controls
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const view = e.currentTarget.dataset.view;
+                    switchView(view);
+                });
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalNSAs = nsaData.length;
+            const states = [...new Set(nsaData.map(nsa => {
+                const location = nsa.location || '';
+                const parts = location.split(',');
+                return parts[parts.length - 1]?.trim();
+            }).filter(Boolean))];
+            const universities = [...new Set(nsaData.map(nsa => nsa.university))];
+            
+            document.getElementById('totalNSAs').textContent = totalNSAs;
+            document.getElementById('totalStates').textContent = states.length;
+            document.getElementById('totalUniversities').textContent = universities.length;
+        }
+
+        // Populate filters
+        function populateFilters() {
+            // Populate state filter
+            const states = [...new Set(nsaData.map(nsa => {
+                const location = nsa.location || '';
+                const parts = location.split(',');
+                return parts[parts.length - 1]?.trim();
+            }).filter(Boolean))].sort();
+            
+            const stateFilter = document.getElementById('stateFilter');
+            states.forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                stateFilter.appendChild(option);
+            });
+            
+            // Populate datalist for search
+            const universityList = document.getElementById('universityList');
+            nsaData.forEach(nsa => {
+                const option = document.createElement('option');
+                option.value = nsa.university;
+                universityList.appendChild(option);
+            });
+        }
+
+        // Handle search
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (searchTerm === '') {
+                filteredData = [...nsaData];
+            } else {
+                filteredData = nsaData.filter(nsa => 
+                    nsa.name.toLowerCase().includes(searchTerm) ||
+                    nsa.university.toLowerCase().includes(searchTerm) ||
+                    (nsa.location && nsa.location.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            handleSort(); // Apply current sort
+            displayResults();
+        }
+
+        // Handle filter
+        function handleFilter() {
+            const selectedState = document.getElementById('stateFilter').value;
+            
+            if (selectedState === '') {
+                handleSearch(); // Reset to search results
+            } else {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                let baseData = nsaData;
+                
+                // Apply search first if there is a search term
+                if (searchTerm !== '') {
+                    baseData = nsaData.filter(nsa => 
+                        nsa.name.toLowerCase().includes(searchTerm) ||
+                        nsa.university.toLowerCase().includes(searchTerm) ||
+                        (nsa.location && nsa.location.toLowerCase().includes(searchTerm))
+                    );
+                }
+                
+                // Then apply state filter
+                filteredData = baseData.filter(nsa => {
+                    const location = nsa.location || '';
+                    const parts = location.split(',');
+                    const state = parts[parts.length - 1]?.trim();
+                    return state === selectedState;
+                });
+            }
+            
+            handleSort(); // Apply current sort
+            displayResults();
+        }
+
+        // Handle sort
+        function handleSort() {
+            const sortBy = document.getElementById('sortBy').value;
+            
+            switch (sortBy) {
+                case 'name':
+                    filteredData.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name-desc':
+                    filteredData.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+                case 'state':
+                    filteredData.sort((a, b) => {
+                        const stateA = a.location?.split(',').pop()?.trim() || '';
+                        const stateB = b.location?.split(',').pop()?.trim() || '';
+                        return stateA.localeCompare(stateB);
+                    });
+                    break;
+                case 'social':
+                    filteredData.sort((a, b) => {
+                        const socialCountA = getSocialMediaCount(a);
+                        const socialCountB = getSocialMediaCount(b);
+                        return socialCountB - socialCountA;
+                    });
+                    break;
+            }
+        }
+
+        // Get social media count
+        function getSocialMediaCount(nsa) {
+            let count = 0;
+            if (nsa.instagram) count++;
+            if (nsa.facebook) count++;
+            if (nsa.twitter) count++;
+            if (nsa.linkedin) count++;
+            if (nsa.tiktok) count++;
+            if (nsa.youtube) count++;
+            if (nsa.discord) count++;
+            if (nsa.groupme) count++;
+            return count;
+        }
+
+        // Display results
+        function displayResults() {
+            document.getElementById('resultsCount').textContent = filteredData.length;
+            
+            if (currentView === 'grid') {
+                displayGridView();
+            } else if (currentView === 'list') {
+                displayListView();
+            } else if (currentView === 'map') {
+                displayMapView();
+            }
+        }
+
+        // Display grid view
+        function displayGridView() {
+            const grid = document.getElementById('nsaGrid');
+            
+            if (filteredData.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No NSA chapters found</h3>
+                        <p>Try adjusting your search criteria</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = filteredData.map(nsa => `
+                <div class="nsa-card">
+                    <div class="card-header">
+                        <div class="university-info">
+                            <h3 class="nsa-name">${nsa.name}</h3>
+                            <p class="university-name">${nsa.university}</p>
+                        </div>
+                        <div class="social-count">
+                            <i class="fas fa-share-alt"></i>
+                            <span>${getSocialMediaCount(nsa)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${nsa.location || 'Location not specified'}</span>
+                        </div>
+                        
+                        ${nsa.president ? `
+                            <div class="president">
+                                <i class="fas fa-user-tie"></i>
+                                <span>President: ${nsa.president}</span>
+                            </div>
+                        ` : ''}
+                        
+                        ${nsa.email ? `
+                            <div class="contact">
+                                <i class="fas fa-envelope"></i>
+                                <a href="mailto:${nsa.email}">${nsa.email}</a>
+                            </div>
+                        ` : ''}
+                        
+                        ${nsa.phone ? `
+                            <div class="contact">
+                                <i class="fas fa-phone"></i>
+                                <a href="tel:${nsa.phone}">${nsa.phone}</a>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="social-links">
+                            ${nsa.instagram ? `<a href="${nsa.instagram}" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>` : ''}
+                            ${nsa.facebook ? `<a href="${nsa.facebook}" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>` : ''}
+                            ${nsa.twitter ? `<a href="${nsa.twitter}" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>` : ''}
+                            ${nsa.linkedin ? `<a href="${nsa.linkedin}" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>` : ''}
+                            ${nsa.tiktok ? `<a href="${nsa.tiktok}" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>` : ''}
+                            ${nsa.youtube ? `<a href="${nsa.youtube}" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>` : ''}
+                            ${nsa.discord ? `<a href="${nsa.discord}" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>` : ''}
+                            ${nsa.groupme ? `<a href="${nsa.groupme}" target="_blank" title="GroupMe"><i class="fas fa-comments"></i></a>` : ''}
+                            ${nsa.website ? `<a href="${nsa.website}" target="_blank" title="Website"><i class="fas fa-globe"></i></a>` : ''}
+                            ${nsa.linktree ? `<a href="${nsa.linktree}" target="_blank" title="LinkTree"><i class="fas fa-link"></i></a>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Display list view
+        function displayListView() {
+            const list = document.getElementById('nsaList');
+            
+            if (filteredData.length === 0) {
+                list.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No NSA chapters found</h3>
+                        <p>Try adjusting your search criteria</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = filteredData.map(nsa => `
+                <div class="nsa-list-item">
+                    <div class="list-item-content">
+                        <div class="primary-info">
+                            <h3 class="nsa-name">${nsa.name}</h3>
+                            <p class="university-name">${nsa.university}</p>
+                            <p class="location"><i class="fas fa-map-marker-alt"></i> ${nsa.location || 'Location not specified'}</p>
+                        </div>
+                        
+                        <div class="secondary-info">
+                            ${nsa.president ? `<p><strong>President:</strong> ${nsa.president}</p>` : ''}
+                            ${nsa.email ? `<p><strong>Email:</strong> <a href="mailto:${nsa.email}">${nsa.email}</a></p>` : ''}
+                            ${nsa.phone ? `<p><strong>Phone:</strong> <a href="tel:${nsa.phone}">${nsa.phone}</a></p>` : ''}
+                        </div>
+                        
+                        <div class="social-links">
+                            ${nsa.instagram ? `<a href="${nsa.instagram}" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>` : ''}
+                            ${nsa.facebook ? `<a href="${nsa.facebook}" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>` : ''}
+                            ${nsa.twitter ? `<a href="${nsa.twitter}" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>` : ''}
+                            ${nsa.linkedin ? `<a href="${nsa.linkedin}" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>` : ''}
+                            ${nsa.tiktok ? `<a href="${nsa.tiktok}" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>` : ''}
+                            ${nsa.youtube ? `<a href="${nsa.youtube}" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>` : ''}
+                            ${nsa.discord ? `<a href="${nsa.discord}" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>` : ''}
+                            ${nsa.groupme ? `<a href="${nsa.groupme}" target="_blank" title="GroupMe"><i class="fas fa-comments"></i></a>` : ''}
+                            ${nsa.website ? `<a href="${nsa.website}" target="_blank" title="Website"><i class="fas fa-globe"></i></a>` : ''}
+                            ${nsa.linktree ? `<a href="${nsa.linktree}" target="_blank" title="LinkTree"><i class="fas fa-link"></i></a>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Display map view (placeholder for now)
+        function displayMapView() {
+            const mapContainer = document.getElementById('nsaMap');
+            mapContainer.innerHTML = `
+                <div class="map-placeholder">
+                    <i class="fas fa-map"></i>
+                    <h3>Map View</h3>
+                    <p>Interactive map coming soon!</p>
+                    <p>Currently showing ${filteredData.length} NSA chapters</p>
+                </div>
+            `;
+        }
+
+        // Switch view
+        function switchView(view) {
+            currentView = view;
+            
+            // Update active button
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-view="${view}"]`).classList.add('active');
+            
+            // Show/hide containers
+            document.getElementById('nsaGrid').classList.toggle('active', view === 'grid');
+            document.getElementById('nsaList').classList.toggle('active', view === 'list');
+            document.getElementById('nsaMap').classList.toggle('active', view === 'map');
+            
+            displayResults();
+        }
+
+        // Display popular universities
+        function displayPopularUniversities() {
+            // Get universities with most social media presence
+            const popular = [...nsaData]
+                .sort((a, b) => getSocialMediaCount(b) - getSocialMediaCount(a))
+                .slice(0, 6);
+            
+            const grid = document.getElementById('popularGrid');
+            grid.innerHTML = popular.map(nsa => `
+                <div class="popular-card" onclick="searchForUniversity('${nsa.university}')">
+                    <div class="popular-header">
+                        <h4>${nsa.name}</h4>
+                        <div class="social-count">
+                            <i class="fas fa-share-alt"></i>
+                            <span>${getSocialMediaCount(nsa)}</span>
+                        </div>
+                    </div>
+                    <p>${nsa.university}</p>
+                    <div class="location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${nsa.location || 'Location not specified'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Search for specific university
+        function searchForUniversity(university) {
+            document.getElementById('searchInput').value = university;
+            handleSearch();
+            document.querySelector('.search-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Modal functions
+        function openSubmitForm() {
+            document.getElementById('submitModal').style.display = 'block';
+        }
+
+        function closeSubmitForm() {
+            document.getElementById('submitModal').style.display = 'none';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', loadNSAData);
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('submitModal');
+            if (e.target === modal) {
+                closeSubmitForm();
+            }
+        });
+    </script>
 </body>
 </html> 

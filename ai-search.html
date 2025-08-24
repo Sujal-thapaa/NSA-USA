@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Search Hub - NSA Network</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <style>
+        .ai-search-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 4rem 0;
+            color: white;
+            text-align: center;
+        }
+
+        .ai-search-hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .ai-search-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-section {
+            background: white;
+            padding: 3rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-input-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 20px 24px;
+            border: 3px solid #e5e7eb;
+            border-radius: 16px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            background: #5a67d8;
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .search-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: translateY(-50%) scale(1);
+        }
+
+        .search-info {
+            text-align: center;
+            color: #6b7280;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-info i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+
+        .refresh-data-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            margin-left: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .refresh-data-btn:hover {
+            background: #5a67d8;
+            transform: rotate(180deg);
+        }
+
+        .refresh-data-btn i {
+            font-size: 0.875rem;
+        }
+
+        .debug-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .debug-btn:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+
+        .debug-btn i {
+            font-size: 0.875rem;
+        }
+
+        .debug-panel {
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 2rem 0;
+        }
+
+        .debug-container {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .debug-title {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .debug-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .debug-section h4 {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .debug-section div {
+            background: #f3f4f6;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #374151;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .api-status {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            color: #92400e;
+            text-align: center;
+        }
+
+        .api-status.error {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .api-status.success {
+            background: #f0fdf4;
+            border-color: #22c55e;
+            color: #166534;
+        }
+
+        .results-section {
+            padding: 3rem 0;
+            background: #f8f9fa;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .results-header h2 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .results-header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .result-icon {
+            font-size: 2rem;
+            opacity: 0.9;
+        }
+
+        .result-category {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .result-content {
+            padding: 1.5rem;
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .result-meta i {
+            margin-right: 0.25rem;
+        }
+
+        .ai-classification {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .ai-classification h4 {
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .classification-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #e0f2fe;
+        }
+
+        .category-badge {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .confidence-score {
+            color: #059669;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading-indicator {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 4rem 0;
+            color: #6b7280;
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .no-results h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-suggestions {
+            background: white;
+            padding: 2rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .suggestions-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .suggestions-title {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .suggestion-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .suggestion-tag {
+            padding: 0.5rem 1rem;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .suggestion-tag:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .section-filters {
+            background: white;
+            padding: 2rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .filters-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .filters-title {
+            font-size: 1.25rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .filter-button {
+            padding: 0.75rem 1.5rem;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .filter-button:hover {
+            background: #e5e7eb;
+        }
+
+        .filter-button.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .ai-search-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .search-input {
+                padding: 16px 20px;
+                font-size: 16px;
+            }
+
+            .search-button {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="nsa-header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo" onclick="toggleUserProfileMenu()">
+                    <div class="logo-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>AI Search Hub</h2>
+                        <span>Intelligent Search Across NSA Network</span>
+                    </div>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="home.html" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="donation.html" class="nav-link">Donation & Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+                <div class="nav-actions">
+                    <div id="userProfile" class="user-profile" style="display: none;">
+                        <div class="user-avatar" onclick="toggleUserMenu()">
+                            <img id="userAvatar" src="https://via.placeholder.com/40x40/3b82f6/ffffff?text=U" alt="User Avatar">
+                        </div>
+                        <div class="user-menu" id="userMenu">
+                            <div class="user-info">
+                                <img id="userMenuAvatar" src="https://via.placeholder.com/60x60/3b82f6/ffffff?text=U" alt="User Avatar">
+                                <div class="user-details">
+                                    <span id="userName">User Name</span>
+                                    <span id="userEmail">user@example.com</span>
+                                </div>
+                            </div>
+                            <div class="menu-items">
+                                <a href="profile.html" class="menu-item">
+                                    <i class="fas fa-user"></i>
+                                    Profile
+                                </a>
+                                <a href="settings.html" class="menu-item">
+                                    <i class="fas fa-cog"></i>
+                                    Settings
+                                </a>
+                                <a href="#" class="menu-item" onclick="handleLogout()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="auth-index.html" class="btn btn-secondary" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </a>
+                </div>
+                <div class="hamburger" onclick="toggleSidebar()" title="Open Menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">NSA Network</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="search.html" class="sidebar-link">
+                    <i class="fas fa-search"></i>
+                    Find NSA
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="chapter-map.html" class="sidebar-link">
+                    <i class="fas fa-map"></i>
+                    Interactive Map
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="events.html" class="sidebar-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    Events Hub
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="alumni.html" class="sidebar-link">
+                    <i class="fas fa-user-graduate"></i>
+                    Alumni Spotlight
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="scholarships.html" class="sidebar-link">
+                    <i class="fas fa-award"></i>
+                    Scholarships
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="mentorship.html" class="sidebar-link">
+                    <i class="fas fa-hands-helping"></i>
+                    Mentorship
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="resources.html" class="sidebar-link">
+                    <i class="fas fa-book"></i>
+                    Resource Center
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="news.html" class="sidebar-link">
+                    <i class="fas fa-newspaper"></i>
+                    News & Updates
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="donation.html" class="sidebar-link">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    Donation & Help
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="volunteer.html" class="sidebar-link">
+                    <i class="fas fa-heart"></i>
+                    Volunteer Board
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="marketplace.html" class="sidebar-link">
+                    <i class="fas fa-store"></i>
+                    Marketplace
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="ai-search-hero">
+            <div class="container">
+                <h1>AI Search Hub</h1>
+                <p>Search across all NSA Network sections using artificial intelligence to find exactly what you're looking for</p>
+            </div>
+        </section>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="container">
+                <div class="search-container">
+                    <div class="search-input-container">
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            id="searchInput" 
+                            placeholder="Enter your search query here..."
+                        >
+                        <button class="search-button" id="searchButton" onclick="performAISearch()">
+                            <i class="fas fa-search"></i>
+                            Search
+                        </button>
+                    </div>
+                    
+                    <div class="search-info">
+                        <i class="fas fa-robot"></i>
+                        AI will search across Events Hub, Alumni Spotlight, Scholarships, Mentorship, Resource Center, News & Updates, Donation & Help, Volunteer Board, and Marketplace
+                        <button class="refresh-data-btn" onclick="refreshWebsiteData()" title="Refresh website data">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="debug-btn" onclick="toggleDebugPanel()" title="Show debug info">
+                            <i class="fas fa-bug"></i>
+                        </button>
+                    </div>
+
+                    <div class="api-status" id="apiStatus">
+                        <i class="fas fa-info-circle"></i>
+                        Ready to search across all NSA Network sections with AI
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Filters -->
+        <section class="section-filters">
+            <div class="container">
+                <div class="filters-container">
+                    <h3 class="filters-title">Filter by Section</h3>
+                    <div class="filter-buttons">
+                        <button class="filter-button active" data-section="all">All Sections</button>
+                        <button class="filter-button" data-section="events">Events Hub</button>
+                        <button class="filter-button" data-section="alumni">Alumni Spotlight</button>
+                        <button class="filter-button" data-section="scholarships">Scholarships</button>
+                        <button class="filter-button" data-section="mentorship">Mentorship</button>
+                        <button class="filter-button" data-section="resources">Resource Center</button>
+                        <button class="filter-button" data-section="news">News & Updates</button>
+                        <button class="filter-button" data-section="donation">Donation & Help</button>
+                        <button class="filter-button" data-section="volunteer">Volunteer Board</button>
+                        <button class="filter-button" data-section="marketplace">Marketplace</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Suggestions -->
+                           <section class="search-suggestions">
+                       <div class="container">
+                           <div class="suggestions-container">
+                               <h3 class="suggestions-title">Popular Search Terms</h3>
+                               <div class="suggestion-tags">
+                                   <div class="suggestion-tag" onclick="searchForTerm('workshop')">Workshop</div>
+                                   <div class="suggestion-tag" onclick="searchForTerm('networking')">Networking</div>
+                                   <div class="suggestion-tag" onclick="searchForTerm('scholarship')">Scholarship</div>
+                                   <div class="suggestion-tag" onclick="searchForTerm('volunteer')">Volunteer</div>
+                                   <div class="suggestion-tag" onclick="searchForTerm('cultural')">Cultural</div>
+                                   <div class="suggestion-tag" onclick="searchForTerm('technology')">Technology</div>
+                                   <div class="suggestion-tag" onclick="searchForTerm('career')">Career</div>
+                                   <div class="suggestion-tag" onclick="searchForTerm('community')">Community</div>
+                               </div>
+                           </div>
+                       </div>
+                   </section>
+
+                   <!-- Debug Panel -->
+                   <section class="debug-panel" id="debugPanel" style="display: none;">
+                       <div class="container">
+                           <div class="debug-container">
+                               <h3 class="debug-title">Debug Information</h3>
+                               <div class="debug-content">
+                                   <div class="debug-section">
+                                       <h4>Data Collection Status</h4>
+                                       <div id="dataStatus">Not initialized</div>
+                                   </div>
+                                   <div class="debug-section">
+                                       <h4>Collected Data Preview</h4>
+                                       <div id="dataPreview">No data collected yet</div>
+                                   </div>
+                                   <div class="debug-section">
+                                       <h4>Last Search Results</h4>
+                                       <div id="lastSearchResults">No searches performed yet</div>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </section>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="container">
+                <div class="results-header" id="resultsHeader" style="display: none;">
+                    <h2>Search Results</h2>
+                    <p id="resultsCount"></p>
+                </div>
+                
+                <div class="results-grid" id="resultsGrid">
+                    <!-- Results will be populated here -->
+                </div>
+
+                <div class="loading-indicator" id="loadingIndicator" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>AI is analyzing your search across all sections...</p>
+                </div>
+
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>No results found</h3>
+                    <p>Try adjusting your search terms or browse our sections directly</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="nsa-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-search"></i>
+                        <span>AI Search Hub</span>
+                    </div>
+                    <p>Intelligent search across the entire NSA Network</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="events.html">Events Hub</a></li>
+                        <li><a href="alumni.html">Alumni Spotlight</a></li>
+                        <li><a href="scholarships.html">Scholarships</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fas fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 NSA Network. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="nav-updater.js"></script>
+    <script>
+        // AI Search Configuration
+        const HF_API_KEY = "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";
+        const HF_API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-mnli";
+        const AI_CATEGORIES = ["Workshop", "Seminar", "Volunteer", "Competition", "Networking", "Technology", "Cultural", "Sports", "Education", "Health", "Career", "Community", "Scholarship", "Mentorship", "Resource", "News", "Donation", "Marketplace"];
+
+        // Function to scrape real text content from website pages
+        async function scrapePageContent(pageUrl, sectionKey) {
+            try {
+                const response = await fetch(pageUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Remove script tags, style tags, and navigation elements
+                const elementsToRemove = doc.querySelectorAll('script, style, nav, header, footer, .nav, .navbar, .sidebar, .menu');
+                elementsToRemove.forEach(el => el.remove());
+                
+                // Get all text content from the page
+                const textContent = [];
+                
+                // Extract headings and their following content
+                const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                headings.forEach(heading => {
+                    const title = heading.textContent.trim();
+                    if (title && title.length > 3) {
+                        let content = '';
+                        let nextElement = heading.nextElementSibling;
+                        
+                        // Collect paragraphs and content following the heading
+                        while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                            if (nextElement.tagName === 'P' || nextElement.tagName === 'DIV') {
+                                const text = nextElement.textContent.trim();
+                                if (text && text.length > 10) {
+                                    content += text + ' ';
+                                }
+                            }
+                            nextElement = nextElement.nextElementSibling;
+                        }
+                        
+                        if (content.trim()) {
+                            textContent.push({
+                                title: title,
+                                content: content.trim(),
+                                type: 'heading_section'
+                            });
+                        }
+                    }
+                });
+                
+                // Also extract standalone paragraphs
+                const paragraphs = doc.querySelectorAll('p');
+                paragraphs.forEach(p => {
+                    const text = p.textContent.trim();
+                    if (text && text.length > 20) {
+                        // Check if this paragraph is not already included in a heading section
+                        const isPartOfHeadingSection = textContent.some(item => 
+                            item.content.includes(text.substring(0, 50))
+                        );
+                        
+                        if (!isPartOfHeadingSection) {
+                            textContent.push({
+                                title: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+                                content: text,
+                                type: 'paragraph'
+                            });
+                        }
+                    }
+                });
+                
+                console.log(`Scraped ${textContent.length} content items from ${pageUrl}`);
+                return textContent;
+                
+            } catch (error) {
+                console.error(`Error scraping ${pageUrl}:`, error);
+                return [];
+            }
+        }
+
+        // Get searchable data (now includes real content scraping)
+        async function getSearchableData() {
+            const sections = {
+                events: { url: 'events.html', name: 'Events Hub' },
+                alumni: { url: 'alumni.html', name: 'Alumni Spotlight' },
+                scholarships: { url: 'scholarships.html', name: 'Scholarships' },
+                mentorship: { url: 'mentorship.html', name: 'Mentorship' },
+                resources: { url: 'resources.html', name: 'Resource Center' },
+                news: { url: 'news.html', name: 'News & Updates' },
+                donation: { url: 'donation.html', name: 'Donation & Help' },
+                volunteer: { url: 'volunteer.html', name: 'Volunteer Board' },
+                marketplace: { url: 'marketplace.html', name: 'Marketplace' }
+            };
+            
+            const searchableData = {};
+            
+            for (const [sectionKey, sectionInfo] of Object.entries(sections)) {
+                const content = await scrapePageContent(sectionInfo.url, sectionKey);
+                searchableData[sectionKey] = content.map(item => ({
+                    title: item.title,
+                    description: item.content,
+                    link: sectionInfo.url,
+                    type: item.type
+                }));
+            }
+            
+            return searchableData;
+        }
+
+        // Convert searchable data to the format expected by the search function
+        function convertToSearchFormat(data) {
+            const converted = {};
+            for (const [section, items] of Object.entries(data)) {
+                converted[section] = items.map(item => ({
+                    title: item.title,
+                    description: item.description,
+                    category: getSectionDisplayName(section),
+                    icon: getSectionIcon(section),
+                    link: item.link,
+                    meta: {}
+                }));
+            }
+            return converted;
+        }
+
+        function getSectionDisplayName(section) {
+            const names = {
+                events: "Events Hub",
+                alumni: "Alumni Spotlight", 
+                scholarships: "Scholarships",
+                mentorship: "Mentorship",
+                resources: "Resource Center",
+                news: "News & Updates",
+                donation: "Donation & Help",
+                volunteer: "Volunteer Board",
+                marketplace: "Marketplace"
+            };
+            return names[section] || section;
+        }
+
+        function getSectionIcon(section) {
+            const icons = {
+                events: "fas fa-calendar-alt",
+                alumni: "fas fa-user-graduate",
+                scholarships: "fas fa-award", 
+                mentorship: "fas fa-hands-helping",
+                resources: "fas fa-book",
+                news: "fas fa-newspaper",
+                donation: "fas fa-hand-holding-heart",
+                volunteer: "fas fa-heart",
+                marketplace: "fas fa-store"
+            };
+            return icons[section] || "fas fa-circle";
+        }
+
+        let currentResults = [];
+        let eventClassifications = {};
+        let activeSectionFilter = 'all';
+        let websiteData = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            initializeWebsiteData();
+        });
+
+        // Initialize website data
+        async function initializeWebsiteData() {
+            const apiStatus = document.getElementById('apiStatus');
+            apiStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scraping real content from all website sections...';
+            
+            try {
+                // Get real searchable data from website pages
+                const searchableData = await getSearchableData();
+                websiteData = convertToSearchFormat(searchableData);
+                
+                apiStatus.innerHTML = '<i class="fas fa-check-circle"></i> Ready to search across all NSA Network sections with AI';
+                console.log('Website data initialized successfully:', websiteData);
+                updateDebugPanel();
+            } catch (error) {
+                console.error('Failed to initialize website data:', error);
+                websiteData = {};
+                apiStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error scraping website content';
+                updateDebugPanel();
+            }
+        }
+
+        function setupEventListeners() {
+            // Search input enter key
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performAISearch();
+                }
+            });
+
+            // Section filter buttons
+            document.querySelectorAll('.filter-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    activeSectionFilter = this.getAttribute('data-section');
+                    
+                    console.log('Active section filter set to:', activeSectionFilter);
+                    
+                    // Update status message
+                    const apiStatus = document.getElementById('apiStatus');
+                    const sectionText = activeSectionFilter === 'all' ? 'all sections' : getSectionDisplayName(activeSectionFilter);
+                    
+                    if (currentResults.length > 0) {
+                        // Filter existing results
+                        filterResults();
+                        apiStatus.innerHTML = `<i class="fas fa-filter"></i> Showing results from ${sectionText}`;
+                    } else {
+                        // No current results, just update status
+                        apiStatus.innerHTML = `<i class="fas fa-filter"></i> Filter set to ${sectionText}. Enter a search term to find results.`;
+                    }
+                });
+            });
+        }
+
+        function searchForTerm(term) {
+            document.getElementById('searchInput').value = term;
+            performAISearch();
+        }
+
+        async function performAISearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (!searchTerm) return;
+
+            // Check if website data is ready
+            if (!websiteData) {
+                const apiStatus = document.getElementById('apiStatus');
+                apiStatus.className = 'api-status error';
+                apiStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Website data not ready. Please wait a moment and try again.';
+                return;
+            }
+
+            const searchButton = document.getElementById('searchButton');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const resultsHeader = document.getElementById('resultsHeader');
+            const resultsGrid = document.getElementById('resultsGrid');
+            const noResults = document.getElementById('noResults');
+
+            // Update UI
+            searchButton.disabled = true;
+            loadingIndicator.style.display = 'block';
+            resultsHeader.style.display = 'none';
+            resultsGrid.style.display = 'none';
+            noResults.style.display = 'none';
+
+            // Update API status
+            const apiStatus = document.getElementById('apiStatus');
+            apiStatus.className = 'api-status';
+            apiStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI is searching across all sections...';
+
+            try {
+                // Search based on active section filter
+                const allResults = [];
+                const sectionsToSearch = activeSectionFilter === 'all' 
+                    ? Object.entries(websiteData) 
+                    : [[activeSectionFilter, websiteData[activeSectionFilter] || []]];
+                
+                for (const [section, items] of sectionsToSearch) {
+                    for (const item of items) {
+                        const relevance = calculateRelevance(item, searchTerm);
+                        if (relevance > 0.2) { // Lower threshold for better results
+                            allResults.push({
+                                ...item,
+                                section: section,
+                                relevance: relevance
+                            });
+                        }
+                    }
+                }
+
+                // Sort by relevance
+                allResults.sort((a, b) => b.relevance - a.relevance);
+
+                // Classify results using AI (only for top results to save API calls)
+                const topResults = allResults.slice(0, 10);
+                for (const result of topResults) {
+                    const resultId = result.section + '-' + result.title;
+                    if (!eventClassifications[resultId]) {
+                        const classification = await classifyContent(result.description);
+                        eventClassifications[resultId] = classification;
+                    }
+                }
+
+                currentResults = allResults;
+                
+                // Update UI
+                apiStatus.className = 'api-status success';
+                const sectionText = activeSectionFilter === 'all' ? 'all sections' : getSectionDisplayName(activeSectionFilter);
+                apiStatus.innerHTML = `<i class="fas fa-check-circle"></i> Found ${allResults.length} results in ${sectionText} for "${searchTerm}"`;
+                
+                displayResults(allResults);
+                hideLoading();
+                updateDebugPanel();
+
+            } catch (error) {
+                console.error('AI search error:', error);
+                apiStatus.className = 'api-status error';
+                apiStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error during AI search. Please try again.';
+                hideLoading();
+            }
+        }
+
+        function calculateRelevance(item, searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            const titleLower = item.title.toLowerCase();
+            const descLower = item.description.toLowerCase();
+            
+            let score = 0;
+            
+            // Title matches get higher weight
+            if (titleLower.includes(searchLower)) score += 0.8;
+            if (descLower.includes(searchLower)) score += 0.4;
+            
+            // Partial word matches
+            const words = searchTerm.split(' ');
+            words.forEach(word => {
+                if (titleLower.includes(word.toLowerCase())) score += 0.3;
+                if (descLower.includes(word.toLowerCase())) score += 0.2;
+            });
+            
+            return Math.min(score, 1.0);
+        }
+
+        function displayResults(results) {
+            const resultsHeader = document.getElementById('resultsHeader');
+            const resultsGrid = document.getElementById('resultsGrid');
+            const noResults = document.getElementById('noResults');
+
+            if (results.length === 0) {
+                resultsHeader.style.display = 'none';
+                resultsGrid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            // Update results header
+            resultsHeader.style.display = 'block';
+            document.getElementById('resultsCount').textContent = `Found ${results.length} relevant results across all sections`;
+
+            // Display results
+            resultsGrid.style.display = 'grid';
+            noResults.style.display = 'none';
+
+            resultsGrid.innerHTML = results.map(result => `
+                <div class="result-card" data-section="${result.section}" onclick="window.location.href='${result.link}'" style="cursor: pointer; transition: all 0.3s ease; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.75rem;" onmouseenter="this.style.backgroundColor='#f1f5f9'" onmouseleave="this.style.backgroundColor='#f8fafc'">
+                    <div class="result-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                        <span class="result-category" style="background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">${result.category}</span>
+                        <span class="result-relevance" style="color: #10b981; font-size: 0.75rem; font-weight: 600;">Match: ${(result.relevance * 100).toFixed(0)}%</span>
+                    </div>
+                    <div class="result-content">
+                        <h3 class="result-title" style="font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; line-height: 1.4;">${result.title}</h3>
+                        <p class="result-description" style="color: #6b7280; font-size: 0.875rem; line-height: 1.5; margin-bottom: 0.75rem;">${result.description.length > 200 ? result.description.substring(0, 200) + '...' : result.description}</p>
+                        ${eventClassifications[result.section + '-' + result.title] ? `
+                            <div class="ai-classification" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.375rem; padding: 0.5rem; margin-bottom: 0.75rem;">
+                                <div class="classification-result" style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="category-badge" style="background: #3b82f6; color: white; padding: 0.125rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">${eventClassifications[result.section + '-' + result.title].label}</span>
+                                    <span class="confidence-score" style="color: #1e40af; font-size: 0.75rem;">${(eventClassifications[result.section + '-' + result.title].score * 100).toFixed(1)}% AI confidence</span>
+                                </div>
+                            </div>
+                        ` : ''}
+                        <div class="result-action" style="color: #667eea; font-size: 0.75rem; font-weight: 500; text-align: right;">
+                            Click to visit ${result.category} →
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterResults() {
+            if (activeSectionFilter === 'all') {
+                displayResults(currentResults);
+            } else {
+                const filteredResults = currentResults.filter(result => result.section === activeSectionFilter);
+                displayResults(filteredResults);
+                
+                // Update results count
+                const resultsCount = document.getElementById('resultsCount');
+                const sectionText = getSectionDisplayName(activeSectionFilter);
+                resultsCount.textContent = `Found ${filteredResults.length} results in ${sectionText}`;
+            }
+        }
+
+        async function classifyContent(description) {
+            try {
+                const response = await fetch(HF_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${HF_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        inputs: description,
+                        parameters: {
+                            candidate_labels: AI_CATEGORIES
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                return {
+                    label: result.labels[0],
+                    score: result.scores[0]
+                };
+
+            } catch (error) {
+                console.error('Classification error:', error);
+                return {
+                    label: 'Other',
+                    score: 0.5
+                };
+            }
+        }
+
+        function hideLoading() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const searchButton = document.getElementById('searchButton');
+            
+            loadingIndicator.style.display = 'none';
+            searchButton.disabled = false;
+        }
+
+        // Function to refresh website data
+        async function refreshWebsiteData() {
+            const apiStatus = document.getElementById('apiStatus');
+            const refreshBtn = document.querySelector('.refresh-data-btn');
+            
+            // Disable refresh button and show loading
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            apiStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Re-scraping content from all website sections...';
+            
+            try {
+                // Get fresh real searchable data
+                const searchableData = await getSearchableData();
+                websiteData = convertToSearchFormat(searchableData);
+                
+                apiStatus.innerHTML = '<i class="fas fa-check-circle"></i> Content refreshed! Ready to search across all NSA Network sections with AI';
+                console.log('Website data refreshed successfully');
+                
+                // Clear previous search results
+                currentResults = [];
+                eventClassifications = {};
+                document.getElementById('resultsHeader').style.display = 'none';
+                document.getElementById('resultsGrid').style.display = 'none';
+                document.getElementById('noResults').style.display = 'none';
+                
+                updateDebugPanel();
+                
+            } catch (error) {
+                console.error('Failed to refresh website data:', error);
+                websiteData = {};
+                apiStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error re-scraping content';
+                updateDebugPanel();
+            } finally {
+                // Re-enable refresh button
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+            }
+        }
+
+        // Debug panel functions
+        function toggleDebugPanel() {
+            const debugPanel = document.getElementById('debugPanel');
+            const debugBtn = document.querySelector('.debug-btn');
+            
+            if (debugPanel.style.display === 'none') {
+                debugPanel.style.display = 'block';
+                debugBtn.style.background = '#dc2626';
+                debugBtn.innerHTML = '<i class="fas fa-times"></i>';
+                updateDebugPanel();
+            } else {
+                debugPanel.style.display = 'none';
+                debugBtn.style.background = '#10b981';
+                debugBtn.innerHTML = '<i class="fas fa-bug"></i>';
+            }
+        }
+
+        function updateDebugPanel() {
+            if (!websiteData) {
+                document.getElementById('dataStatus').textContent = 'No data collected yet';
+                document.getElementById('dataPreview').textContent = 'Website data not initialized';
+                return;
+            }
+
+            // Update data status
+            let totalItems = 0;
+            const sectionCounts = {};
+            
+            for (const [section, items] of Object.entries(websiteData)) {
+                totalItems += items.length;
+                sectionCounts[section] = items.length;
+            }
+            
+            document.getElementById('dataStatus').textContent = `Total items: ${totalItems}\nSections: ${Object.keys(websiteData).length}\n\nSection breakdown:\n${Object.entries(sectionCounts).map(([section, count]) => `${section}: ${count} items`).join('\n')}`;
+
+            // Update data preview
+            const previewData = {};
+            for (const [section, items] of Object.entries(websiteData)) {
+                previewData[section] = items.slice(0, 2).map(item => ({
+                    title: item.title,
+                    description: item.description.substring(0, 100) + '...'
+                }));
+            }
+            
+            document.getElementById('dataPreview').textContent = JSON.stringify(previewData, null, 2);
+
+            // Update last search results
+            if (currentResults.length > 0) {
+                const searchSummary = currentResults.slice(0, 3).map(result => ({
+                    title: result.title,
+                    section: result.section,
+                    relevance: result.relevance.toFixed(3)
+                }));
+                document.getElementById('lastSearchResults').textContent = JSON.stringify(searchSummary, null, 2);
+            } else {
+                document.getElementById('lastSearchResults').textContent = 'No searches performed yet';
+            }
+        }
+    </script>
+</body>
+</html>

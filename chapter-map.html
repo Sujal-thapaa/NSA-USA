@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NSA Chapters Map - NSA Network</title>
+    <title>Interactive Map - NSA Network</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="chapter-map.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -47,15 +47,9 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="map.html" class="sidebar-link">
-                    <i class="fas fa-map-marked-alt"></i>
-                    Map View
-                </a>
-            </li>
-            <li class="sidebar-item">
                 <a href="chapter-map.html" class="sidebar-link">
                     <i class="fas fa-map"></i>
-                    Chapter Map
+                    Interactive Map
                 </a>
             </li>
             <li class="sidebar-item">
@@ -128,7 +122,7 @@
                 <div class="hero-content">
                     <div class="hero-text">
                         <h1 class="hero-title">
-                            NSA Chapters <span class="highlight">Across the USA</span>
+                            Interactive <span class="highlight">NSA Map</span>
                         </h1>
                         <p class="hero-description">
                             Find and connect with Nepalese Student Associations at universities nationwide. 
@@ -168,10 +162,7 @@
                                 <i class="fas fa-plus"></i>
                                 Submit Your Chapter
                             </button>
-                            <button class="btn btn-secondary btn-large" onclick="scrollToDirectory()">
-                                <i class="fas fa-list"></i>
-                                View All Chapters
-                            </button>
+
                         </div>
                     </div>
                     <div class="hero-visual">
@@ -276,48 +267,6 @@
                             </button>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Chapter Directory Section -->
-        <section class="chapter-directory" id="chapterDirectory">
-            <div class="container">
-                <div class="section-header">
-                    <h2>All NSA Chapters</h2>
-                    <p>Complete directory of Nepalese Student Associations across the United States</p>
-                </div>
-                
-                <div class="directory-controls">
-                    <div class="view-toggle">
-                        <button class="view-btn active" data-view="grid" onclick="switchView('grid')">
-                            <i class="fas fa-th"></i>
-                            Grid View
-                        </button>
-                        <button class="view-btn" data-view="list" onclick="switchView('list')">
-                            <i class="fas fa-list"></i>
-                            List View
-                        </button>
-                    </div>
-                    
-                    <div class="directory-stats">
-                        <span id="directoryResults">0</span> chapters displayed
-                    </div>
-                </div>
-                
-                <div class="chapters-grid" id="chaptersGrid">
-                    <!-- Chapters will be populated here -->
-                </div>
-                
-                <div class="chapters-list" id="chaptersList" style="display: none;">
-                    <!-- List view will be populated here -->
-                </div>
-                
-                <div class="load-more-container">
-                    <button class="btn btn-secondary" id="loadMoreBtn" onclick="loadMoreChapters()">
-                        <i class="fas fa-plus"></i>
-                        Load More Chapters
-                    </button>
                 </div>
             </div>
         </section>
@@ -538,8 +487,291 @@
         </div>
     </footer>
 
+    <!-- Floating AI Search Button -->
+    <div class="ai-search-float" onclick="window.location.href='ai-search.html'" title="AI Search">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <style>
+        .ai-search-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        .ai-search-float:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .ai-search-float i {
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-search-float:hover i {
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.7);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .ai-search-float {
+                width: 50px;
+                height: 50px;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .ai-search-float i {
+                font-size: 20px;
+            }
+        }
+    </style>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="nav-updater.js"></script>
-    <script src="chapter-map.js"></script>
+    <script>
+        // Load NSA data and initialize map
+        let nsaData = [];
+        let filteredData = [];
+        let map = null;
+        let markersLayer = null;
+
+        async function loadNSAData() {
+            try {
+                const response = await fetch('nsa_data.json');
+                nsaData = await response.json();
+                filteredData = [...nsaData];
+                
+                updateStats();
+                populateFilters();
+                initializeMap();
+                
+            } catch (error) {
+                console.error('Error loading NSA data:', error);
+            }
+        }
+
+        function updateStats() {
+            const totalChapters = nsaData.length;
+            const states = [...new Set(nsaData.map(nsa => {
+                const location = nsa.location || '';
+                const parts = location.split(',');
+                return parts[parts.length - 1]?.trim();
+            }).filter(Boolean))];
+            const universities = [...new Set(nsaData.map(nsa => nsa.university))];
+            
+            document.getElementById('totalChapters').textContent = totalChapters;
+            document.getElementById('totalStates').textContent = states.length;
+            document.getElementById('totalUniversities').textContent = universities.length;
+        }
+
+        function populateFilters() {
+            const states = [...new Set(nsaData.map(nsa => {
+                const location = nsa.location || '';
+                const parts = location.split(',');
+                return parts[parts.length - 1]?.trim();
+            }).filter(Boolean))].sort();
+            
+            const stateFilter = document.getElementById('stateFilter');
+            states.forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                stateFilter.appendChild(option);
+            });
+        }
+
+        function initializeMap() {
+            map = L.map('chapterMap').setView([39.8283, -98.5795], 4);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            markersLayer = L.layerGroup().addTo(map);
+
+            // Once the map is ready, add markers for all chapters
+            renderMarkers(nsaData);
+        }
+
+        // Simple US state centroid fallbacks (lat, lng)
+        const stateCentroids = {
+            "Alabama": [32.806671, -86.791130], "Alaska": [61.370716, -152.404419], "Arizona": [33.729759, -111.431221],
+            "Arkansas": [34.969704, -92.373123], "California": [36.116203, -119.681564], "Colorado": [39.059811, -105.311104],
+            "Connecticut": [41.597782, -72.755371], "Delaware": [39.318523, -75.507141], "Florida": [27.766279, -81.686783],
+            "Georgia": [33.040619, -83.643074], "Hawaii": [21.094318, -157.498337], "Idaho": [44.240459, -114.478828],
+            "Illinois": [40.349457, -88.986137], "Indiana": [39.849426, -86.258278], "Iowa": [42.011539, -93.210526],
+            "Kansas": [38.526600, -96.726486], "Kentucky": [37.668140, -84.670067], "Louisiana": [31.169546, -91.867805],
+            "Maine": [44.693947, -69.381927], "Maryland": [39.063946, -76.802101], "Massachusetts": [42.230171, -71.530106],
+            "Michigan": [43.326618, -84.536095], "Minnesota": [45.694454, -93.900192], "Mississippi": [32.741646, -89.678696],
+            "Missouri": [38.456085, -92.288368], "Montana": [46.921925, -110.454353], "Nebraska": [41.125370, -98.268082],
+            "Nevada": [38.313515, -117.055374], "New Hampshire": [43.452492, -71.563896], "New Jersey": [40.298904, -74.521011],
+            "New Mexico": [34.840515, -106.248482], "New York": [42.165726, -74.948051], "North Carolina": [35.630066, -79.806419],
+            "North Dakota": [47.528912, -99.784012], "Ohio": [40.388783, -82.764915], "Oklahoma": [35.565342, -96.928917],
+            "Oregon": [44.572021, -122.070938], "Pennsylvania": [40.590752, -77.209755], "Rhode Island": [41.680893, -71.511780],
+            "South Carolina": [33.856892, -80.945007], "South Dakota": [44.299782, -99.438828], "Tennessee": [35.747845, -86.692345],
+            "Texas": [31.054487, -97.563461], "Utah": [40.150032, -111.862434], "Vermont": [44.045876, -72.710686],
+            "Virginia": [37.769337, -78.169968], "Washington": [47.400902, -121.490494], "West Virginia": [38.491226, -80.954453],
+            "Wisconsin": [44.268543, -89.616508], "Wyoming": [42.755966, -107.302490]
+        };
+
+        function extractState(locationText) {
+            if (!locationText) return null;
+            const parts = locationText.split(',');
+            const last = parts[parts.length - 1]?.trim();
+            if (!last) return null;
+            // Normalize state name capitalization
+            return last;
+        }
+
+        function getGeocodeCache() {
+            try {
+                return JSON.parse(localStorage.getItem('nsaGeocodeCache') || '{}');
+            } catch (_) {
+                return {};
+            }
+        }
+
+        function setGeocodeCache(cache) {
+            try {
+                localStorage.setItem('nsaGeocodeCache', JSON.stringify(cache));
+            } catch (_) {}
+        }
+
+        async function geocode(query) {
+            const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=${encodeURIComponent(query)}`;
+            const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+            if (!res.ok) throw new Error('Geocoding failed');
+            const data = await res.json();
+            if (!Array.isArray(data) || data.length === 0) return null;
+            const item = data[0];
+            return { lat: parseFloat(item.lat), lon: parseFloat(item.lon) };
+        }
+
+        async function getCoordinatesForNSA(nsa) {
+            const cache = getGeocodeCache();
+            const key = `${nsa.university || nsa.name} | ${nsa.location || ''}`.trim();
+            if (cache[key]) return cache[key];
+
+            // Try geocoding with university + location first
+            let coords = null;
+            const queries = [];
+            if (nsa.university && nsa.location) queries.push(`${nsa.university}, ${nsa.location}, USA`);
+            if (nsa.location) queries.push(`${nsa.location}, USA`);
+            if (nsa.university) queries.push(`${nsa.university}, USA`);
+
+            for (const q of queries) {
+                try {
+                    coords = await geocode(q);
+                    if (coords) break;
+                } catch (_) {}
+                // Be polite to the geocoding service
+                await new Promise(r => setTimeout(r, 400));
+            }
+
+            // Fallback to state centroid if needed
+            if (!coords) {
+                const state = extractState(nsa.location || '');
+                if (state && stateCentroids[state]) {
+                    const [lat, lon] = stateCentroids[state];
+                    coords = { lat, lon };
+                }
+            }
+
+            if (coords) {
+                cache[key] = coords;
+                setGeocodeCache(cache);
+                return coords;
+            }
+
+            return null;
+        }
+
+        function buildPopupHtml(nsa) {
+            const instagram = nsa.instagram ? `<a href="${nsa.instagram}" target="_blank" style="margin-right:8px;color:#C13584"><i class='fab fa-instagram'></i></a>` : '';
+            const facebook = nsa.facebook ? `<a href="${nsa.facebook}" target="_blank" style="margin-right:8px;color:#1877f2"><i class='fab fa-facebook'></i></a>` : '';
+            const email = nsa.email ? `<a href="mailto:${nsa.email}" style="color:#10b981"><i class='fas fa-envelope'></i></a>` : '';
+            return `
+                <div style="min-width:220px;">
+                    <div style="font-weight:700;font-size:16px;margin-bottom:4px;">${nsa.name || 'NSA Chapter'}</div>
+                    <div style="color:#4b5563;margin-bottom:6px;">${nsa.university || ''}</div>
+                    <div style="color:#6b7280;margin-bottom:10px;"><i class="fas fa-map-marker-alt" style="color:#ef4444"></i> ${nsa.location || 'Location not specified'}</div>
+                    <div>${instagram}${facebook}${email}</div>
+                </div>
+            `;
+        }
+
+        async function renderMarkers(list) {
+            if (!map || !markersLayer) return;
+            markersLayer.clearLayers();
+
+            let count = 0;
+            for (const nsa of list) {
+                const coords = await getCoordinatesForNSA(nsa);
+                if (!coords) continue;
+                const marker = L.marker([coords.lat, coords.lon]);
+                marker.bindPopup(buildPopupHtml(nsa));
+                markersLayer.addLayer(marker);
+                count++;
+                // Small delay to avoid hammering the geocoder when uncached
+                await new Promise(r => setTimeout(r, 150));
+            }
+            const resultsEl = document.getElementById('filteredResults');
+            if (resultsEl) resultsEl.textContent = count;
+        }
+
+        function openChapterForm() {
+            document.getElementById('chapterModal').style.display = 'block';
+        }
+
+        function closeChapterForm() {
+            document.getElementById('chapterModal').style.display = 'none';
+        }
+
+        function resetFilters() {
+            document.getElementById('chapterSearch').value = '';
+            document.getElementById('stateFilter').value = '';
+            document.getElementById('universityFilter').value = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', loadNSAData);
+    </script>
 </body>
 </html> 

@@ -68,15 +68,9 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="map.html" class="sidebar-link">
-                    <i class="fas fa-map-marked-alt"></i>
-                    Map View
-                </a>
-            </li>
-            <li class="sidebar-item">
                 <a href="chapter-map.html" class="sidebar-link">
                     <i class="fas fa-map"></i>
-                    Chapter Map
+                    Interactive Map
                 </a>
             </li>
             <li class="sidebar-item">
@@ -101,6 +95,12 @@
                 <a href="mentorship.html" class="sidebar-link">
                     <i class="fas fa-hands-helping"></i>
                     Mentorship
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="ai-search.html" class="sidebar-link">
+                    <i class="fas fa-robot"></i>
+                    AI Search
                 </a>
             </li>
             <li class="sidebar-item">
@@ -624,6 +624,84 @@
             </div>
         </div>
     </footer>
+
+    <!-- Floating AI Search Button -->
+    <div class="ai-search-float" onclick="window.location.href='ai-search.html'" title="AI Search">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <style>
+        .ai-search-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        .ai-search-float:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .ai-search-float i {
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-search-float:hover i {
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.7);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .ai-search-float {
+                width: 50px;
+                height: 50px;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .ai-search-float i {
+                font-size: 20px;
+            }
+        }
+    </style>
 
     <script src="nav-updater.js"></script>
     <script src="mentorship.js"></script>
