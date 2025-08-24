@@ -71,6 +71,7 @@ Discover and connect with Nepali Student Associations (NSA) across American univ
 - Font Awesome (icons), Google Fonts (Inter)
 - Supabase JS (Auth + DB)
 - Stripe.js (donation demo)
+-Hugging Face Zero-Shot Classification API (AI search)
 
 ## File Structure
 
