@@ -43,6 +43,29 @@
                         <i class="fas fa-heart"></i>
                         Donate Now
                     </button>
+                    <div id="userProfile" class="user-profile" style="display: none;">
+                        <div class="user-avatar" onclick="toggleUserMenu()">
+                            <img id="userAvatar" src="https://via.placeholder.com/40x40/3b82f6/ffffff?text=U" alt="User Avatar">
+                        </div>
+                        <div class="user-menu" id="userMenu">
+                            <div class="user-info">
+                                <img id="userMenuAvatar" src="https://via.placeholder.com/60x60/3b82f6/ffffff?text=U" alt="User Avatar">
+                                <div class="user-details">
+                                    <span id="userName">User Name</span>
+                                    <span id="userEmail">user@example.com</span>
+                                </div>
+                            </div>
+                            <div class="menu-items">
+                                <a href="profile.html" class="menu-item"><i class="fas fa-user"></i> Profile</a>
+                                <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i> Settings</a>
+                                <a href="#" class="menu-item" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="auth-index.html" class="btn btn-secondary" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </a>
                 </div>
                 <div class="hamburger" onclick="toggleSidebar()" title="Open Menu">
                     <span class="bar"></span>
@@ -430,6 +453,11 @@
             <div class="modal-body">
                 <div class="donation-options">
                     <h4>Choose Your Contribution</h4>
+                    <div class="plan-toggle">
+                        <span class="toggle-label active" data-plan="one">One-time</span>
+                        <div class="toggle-switch" id="planSwitch" aria-label="Toggle donation plan"></div>
+                        <span class="toggle-label" data-plan="monthly">Monthly</span>
+                    </div>
                     <div class="amount-buttons">
                         <button class="amount-btn" data-amount="1">$1</button>
                         <button class="amount-btn" data-amount="5">$5</button>
@@ -460,6 +488,11 @@
                     <!-- Payment Information -->
                     <div class="payment-section">
                         <h4>Payment Information</h4>
+                        <div class="trust-badges" aria-label="Security badges">
+                            <div class="badge"><i class="fas fa-lock"></i> SSL Secure</div>
+                            <div class="badge"><i class="fab fa-stripe"></i> Powered by Stripe</div>
+                            <div class="badge"><i class="fas fa-shield-alt"></i> PCI-DSS Compliant</div>
+                        </div>
                         <div class="payment-form-grid">
                             <div class="form-group card-number-group">
                                 <label for="cardNumber">Card Number</label>

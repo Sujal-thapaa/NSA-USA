@@ -1,3 +1,5 @@
+#Hosted in https://nsa-usa.vercel.app/
+
 # NSA Network Website
 
 Discover and connect with Nepali Student Associations (NSA) across American universities. This site provides searchable listings, an interactive map with chapter pins, event discovery with AI-powered search, a donation portal (Stripe), and Supabase authentication.
@@ -71,7 +73,7 @@ Discover and connect with Nepali Student Associations (NSA) across American univ
 - Font Awesome (icons), Google Fonts (Inter)
 - Supabase JS (Auth + DB)
 - Stripe.js (donation demo)
--Hugging Face Zero-Shot Classification API (AI search)
+- Hugging Face Zero-Shot Classification API (AI search)
 
 ## File Structure
 

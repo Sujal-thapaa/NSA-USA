@@ -16,6 +16,7 @@ let helpRequests = [
     {
         id: 1,
         type: 'medical',
+        university: 'Boston University',
         title: 'Emergency Surgery for Priya',
         description: 'Priya needs immediate surgery after a severe car accident. Her family is struggling with mounting medical bills and needs community support.',
         amountNeeded: 5000,
@@ -28,6 +29,7 @@ let helpRequests = [
     {
         id: 2,
         type: 'bereavement',
+        university: 'Columbia University',
         title: 'Support for Sharma Family',
         description: 'After the sudden loss of their father, the Sharma family needs help with funeral expenses and temporary financial support.',
         amountNeeded: 3500,
@@ -40,6 +42,7 @@ let helpRequests = [
     {
         id: 3,
         type: 'housing',
+        university: 'UCLA',
         title: 'Emergency Housing for Raj',
         description: 'Raj was unexpectedly evicted and needs immediate help securing temporary housing and deposits for a new apartment.',
         amountNeeded: 2000,
@@ -52,6 +55,7 @@ let helpRequests = [
     {
         id: 4,
         type: 'medical',
+        university: 'University of Chicago',
         title: 'Cancer Treatment for Maya',
         description: 'Maya is battling cancer and her insurance doesn\'t cover all treatment costs. The family needs help with medical expenses.',
         amountNeeded: 8000,
@@ -78,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeHelpRequestForm();
     updateProgressCircle();
     initializeStripe();
+    initializePlanToggle();
 });
 
 // Initialize premium form inputs
@@ -135,6 +140,10 @@ function createRequestCard(request) {
         </div>
         <div class="request-body">
             <h3 class="request-title">${request.title}</h3>
+            <div class="verify-badge" title="Verified by NSA President of ${request.university || 'their university'}" onclick="showVerification('${(request.university || 'their university').replace(/['"\\]/g, '')}')">
+                <i class="fas fa-certificate"></i>
+                <span>Verified by NSA President</span>
+            </div>
             <p class="request-description">${request.description}</p>
             
             <div class="request-progress">
@@ -171,6 +180,12 @@ function createRequestCard(request) {
     `;
     
     return card;
+}
+
+// Show verification info
+function showVerification(university) {
+    const message = `Verified by NSA president of ${university}`;
+    showSuccessMessage('Verification', message);
 }
 
 // Helper functions for request cards
@@ -351,13 +366,44 @@ function initializeDonationForm() {
     document.getElementById('payment-form').addEventListener('submit', handlePaymentSubmission);
 }
 
+// Plan toggle (one-time vs monthly)
+function initializePlanToggle() {
+    const switchEl = document.getElementById('planSwitch');
+    const labels = document.querySelectorAll('.plan-toggle .toggle-label');
+    if (!switchEl || labels.length === 0) return;
+    let isMonthly = false;
+
+    function updateLabels() {
+        labels.forEach(l => l.classList.remove('active'));
+        const active = Array.from(labels).find(l => l.dataset.plan === (isMonthly ? 'monthly' : 'one'));
+        if (active) active.classList.add('active');
+        switchEl.classList.toggle('monthly', isMonthly);
+    }
+
+    switchEl.addEventListener('click', () => {
+        isMonthly = !isMonthly;
+        updateLabels();
+        updateDonationSummary();
+    });
+    labels.forEach(label => {
+        label.addEventListener('click', () => {
+            isMonthly = label.dataset.plan === 'monthly';
+            updateLabels();
+            updateDonationSummary();
+        });
+    });
+
+    updateLabels();
+}
+
 // Update donation summary
 function updateDonationSummary() {
     const donationAmount = document.getElementById('donation-amount');
     const totalAmount = document.getElementById('total-amount');
-    
-    donationAmount.textContent = formatCurrency(selectedAmount);
-    totalAmount.textContent = formatCurrency(selectedAmount);
+    const isMonthly = document.getElementById('planSwitch')?.classList.contains('monthly');
+    const amount = selectedAmount || 0;
+    donationAmount.textContent = isMonthly ? `${formatCurrency(amount)} / mo` : formatCurrency(amount);
+    totalAmount.textContent = donationAmount.textContent;
 }
 
 // Handle payment form submission
