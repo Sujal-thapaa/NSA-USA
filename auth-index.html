@@ -242,9 +242,7 @@
             Continue with Google
         </button>
 
-        <button id="testConnectionBtn" style="margin-top: 1rem; padding: 0.5rem 1rem; background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); color: #667eea; border-radius: 8px; cursor: pointer; font-size: 0.875rem;">
-            🔧 Test Database Connection
-        </button>
+        
 
         <div class="divider">
             <span>Why join NSA Network?</span>
@@ -297,10 +295,8 @@
                 console.log('Auth page initializing...');
                 
                 const googleLoginBtn = document.getElementById('googleLoginBtn');
-                const testConnectionBtn = document.getElementById('testConnectionBtn');
-                
-                if (!googleLoginBtn || !testConnectionBtn) {
-                    console.error('Required buttons not found');
+                if (!googleLoginBtn) {
+                    console.error('Login button not found');
                     return;
                 }
                 
@@ -318,8 +314,7 @@
                 // Handle Google login
                 googleLoginBtn.addEventListener('click', handleGoogleLogin);
 
-                // Handle test connection
-                testConnectionBtn.addEventListener('click', handleTestConnection);
+                
 
                             // Listen for auth state changes
             supabaseAuth.onAuthStateChange(async (event, session) => {
@@ -393,36 +388,7 @@
                 }
             }
 
-            async function handleTestConnection() {
-                const testBtn = document.getElementById('testConnectionBtn');
-                const originalText = testBtn.innerHTML;
-                
-                try {
-                    testBtn.innerHTML = '🔧 Testing...';
-                    testBtn.disabled = true;
-                    
-                    const result = await window.testSupabaseConnection();
-                    
-                    if (result.connected) {
-                        if (result.tableExists) {
-                            supabaseUtils.showSuccess('✅ Database connection working and profiles table exists!');
-                        } else {
-                            supabaseUtils.showError('⚠️ Database connected but profiles table missing. Please create the table first.');
-                        }
-                    } else {
-                        supabaseUtils.showError('❌ Database connection failed. Check your Supabase credentials.');
-                    }
-                    
-                    console.log('Connection test result:', result);
-                    
-                } catch (error) {
-                    console.error('Test connection error:', error);
-                    supabaseUtils.showError('Test failed: ' + error.message);
-                } finally {
-                    testBtn.innerHTML = originalText;
-                    testBtn.disabled = false;
-                }
-            }
+            
         })();
     </script>
 </body>

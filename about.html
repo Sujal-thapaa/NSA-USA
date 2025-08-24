@@ -178,9 +178,8 @@
                             About <span class="highlight">NSA Network</span>
                         </h1>
                         <p class="hero-description">
-                            The NSA Network is a comprehensive platform connecting Nepali students across American universities. 
-                            Our mission is to foster community, share resources, and support the academic and social journey 
-                            of Nepali students in the United States.
+                            NSA Network helps Nepali students discover chapters, connect across universities, and access resources. 
+                            We provide AI-powered search, an interactive map with chapter pins, events hub, and a secure login/registration system.
                         </p>
                         <div class="hero-stats">
                             <div class="stat-card">
@@ -371,31 +370,24 @@
                 <div class="team-grid">
                     <div class="team-member">
                         <div class="member-avatar">
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user-tie"></i>
                         </div>
-                        <h3>Development Team</h3>
-                        <p>Building and maintaining the platform</p>
+                        <h3>Sujal Thapa</h3>
+                        <p>Team Lead — Full Stack & AI</p>
                     </div>
                     <div class="team-member">
                         <div class="member-avatar">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-server"></i>
                         </div>
-                        <h3>Community Managers</h3>
-                        <p>Connecting with NSA chapters nationwide</p>
+                        <h3>Sandhya Rimal</h3>
+                        <p>Backend & Presentation</p>
                     </div>
                     <div class="team-member">
                         <div class="member-avatar">
-                            <i class="fas fa-calendar-check"></i>
+                            <i class="fas fa-laptop-code"></i>
                         </div>
-                        <h3>Events Coordinators</h3>
-                        <p>Organizing and promoting community events</p>
-                    </div>
-                    <div class="team-member">
-                        <div class="member-avatar">
-                            <i class="fas fa-hands-helping"></i>
-                        </div>
-                        <h3>Volunteers</h3>
-                        <p>Supporting the network across universities</p>
+                        <h3>Ankit Devkota</h3>
+                        <p>Frontend</p>
                     </div>
                 </div>
             </div>
@@ -461,7 +453,7 @@
                     <ul>
                         <li><a href="home.html">Home</a></li>
                         <li><a href="search.html">Find NSA</a></li>
-                        <li><a href="map.html">Map View</a></li>
+                        <li><a href="chapter-map.html">Interactive Map</a></li>
                         <li><a href="events.html">Events Hub</a></li>
                     </ul>
                 </div>
@@ -488,6 +480,7 @@
         // Check login status when page loads
         document.addEventListener('DOMContentLoaded', async function() {
             await checkLoginStatus();
+            loadNSAStats();
         });
 
         async function checkLoginStatus() {
@@ -516,6 +509,32 @@
                 console.error('Error checking login status:', error);
                 showLoginButton();
             }
+        }
+
+        function loadNSAStats() {
+            fetch('nsa_data.json')
+                .then(res => res.json())
+                .then(data => {
+                    const totalNSAs = data.length;
+                    const states = [...new Set(data
+                        .map(nsa => (nsa.location || '')
+                            .split(',')
+                            .pop()?.trim())
+                        .filter(Boolean))];
+                    const universities = [...new Set(data
+                        .map(nsa => nsa.university)
+                        .filter(Boolean))];
+
+                    const setCount = (id, val) => {
+                        const el = document.getElementById(id);
+                        if (el) el.textContent = val;
+                    };
+
+                    setCount('totalNSAs', totalNSAs);
+                    setCount('totalStates', states.length);
+                    setCount('totalUniversities', universities.length);
+                })
+                .catch(e => console.error('Failed to load NSA stats:', e));
         }
 
         function showUserProfile() {

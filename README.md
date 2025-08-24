@@ -1,6 +1,6 @@
-# NSA Network - Standalone Website
+# NSA Network Website
 
-A comprehensive platform for discovering and connecting with Nepali Student Associations (NSA) across American universities.
+Discover and connect with Nepali Student Associations (NSA) across American universities. This site provides searchable listings, an interactive map with chapter pins, event discovery with AI-powered search, a donation portal (Stripe), and Supabase authentication.
 
 ## Features
 
@@ -22,10 +22,10 @@ A comprehensive platform for discovering and connecting with Nepali Student Asso
 - **Map View**: Interactive map showing NSA locations across the US
 
 ### 🗺️ **Interactive Map**
-- Geographic visualization of all NSA chapters
-- Click markers for detailed information
+- Geographic visualization of NSA chapters with pins (Leaflet)
+- Automatic geocoding and local caching
+- Click markers for details and social links
 - Responsive map controls
-- State-based clustering
 
 ### 📱 **Social Media Integration**
 - Direct links to all social platforms:
@@ -65,22 +65,38 @@ A comprehensive platform for discovering and connecting with Nepali Student Asso
 
 ## Technical Stack
 
-- **HTML5**: Semantic markup
-- **CSS3**: Modern styling with CSS Grid and Flexbox
-- **JavaScript (ES6+)**: Vanilla JS with modern features
-- **Leaflet.js**: Interactive mapping
-- **Font Awesome**: Icons
-- **Google Fonts**: Typography (Inter)
+- HTML5, CSS3, JavaScript (ES6+)
+- Leaflet.js + OpenStreetMap tiles (maps)
+- Nominatim (geocoding, client-side)
+- Font Awesome (icons), Google Fonts (Inter)
+- Supabase JS (Auth + DB)
+- Stripe.js (donation demo)
 
 ## File Structure
 
 ```
 NSA-Website/
-├── index.html          # Main website page
-├── styles.css          # Comprehensive styling
-├── script.js           # JavaScript functionality
-├── nsa_data.json       # NSA data source
-└── README.md           # This documentation
+├── index.html
+├── home.html
+├── search.html
+├── chapter-map.html
+├── ai-search.html
+├── donation.{html,css,js}
+├── events.{html,css,js}
+├── news.{html,css,js}
+├── mentorship.{html,js}
+├── resources.{html,css,js}
+├── scholarships.{html,js}
+├── login.{html,css,js}
+├── register.html
+├── profile.html
+├── settings.html
+├── supabase.js
+├── nav-updater.js
+├── styles.css
+├── chapter-map.css
+├── nsa_data.json
+└── stripe-demo/
 ```
 
 ## Data Structure
@@ -141,14 +157,29 @@ The website loads NSA data from `nsa_data.json` with the following structure:
 - Safari 12+
 - Edge 79+
 
-## Usage
+## Setup & Run
 
-1. **Open the website**: Navigate to `NSA-Website/index.html`
-2. **Search for NSAs**: Use the search bar to find specific universities
-3. **Filter by state**: Use the state dropdown to narrow results
-4. **Switch views**: Toggle between grid, list, and map views
-5. **Explore map**: Click on map markers for detailed information
-6. **Submit new NSA**: Use the "Add NSA" button to submit new chapters
+Static frontend requires serving over HTTP (not file://). Choose one:
+
+```bash
+# Option A: Python
+python3 -m http.server 5500
+# open http://localhost:5500/NSA-Website/index.html
+
+# Option B: Node serve
+npx serve -l 5500
+
+# Option C: VS Code Live Server
+# Right-click index.html → Open with Live Server
+```
+
+Entry pages:
+
+- `auth-index.html` (Google login)
+- `home.html` (landing)
+- `search.html` (Find NSA)
+- `chapter-map.html` (Interactive Map)
+- `ai-search.html` (Global AI search)
 
 ## Customization
 
@@ -167,17 +198,33 @@ The website loads NSA data from `nsa_data.json` with the following structure:
 - Modify data structure as needed
 - Add new social media platforms
 
-## Contributing
+## Dependencies & Tools
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+- Frontend: HTML5, CSS3, JavaScript (ES6+)
+- UI: Font Awesome, Google Fonts
+- Maps: Leaflet.js, OpenStreetMap tiles, Nominatim (geocoding)
+- Auth/DB: Supabase JavaScript SDK
+- AI: Hugging Face Inference API (Zero-Shot Classification)
+- Payments: Stripe.js (frontend), Node.js + Express demo in `stripe-demo/`
+
+Stripe demo backend:
+
+```bash
+cd stripe-demo
+npm install
+export STRIPE_SECRET_KEY=sk_test_...
+npm run dev   # or npm start
+```
+
+## Team
+
+- Team Lead: Sujal Thapa — Full Stack & AI
+- Sandhya Rimal — Backend & Presentation
+- Ankit Devkota — Frontend
 
 ## License
 
-This project is part of the FUSN (Foreign University Student Network) platform.
+Internal project for the NSA Network / FUSN initiative.
 
 ## Support
 

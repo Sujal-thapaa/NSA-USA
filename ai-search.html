@@ -1120,6 +1120,8 @@
 
             try {
                 // Search based on active section filter
+                // Expand search with synonyms
+                const expandedTerms = await getExpandedSearchTerms(searchTerm);
                 const allResults = [];
                 const sectionsToSearch = activeSectionFilter === 'all' 
                     ? Object.entries(websiteData) 
@@ -1127,7 +1129,7 @@
                 
                 for (const [section, items] of sectionsToSearch) {
                     for (const item of items) {
-                        const relevance = calculateRelevance(item, searchTerm);
+                        const relevance = calculateRelevanceWithSynonyms(item, expandedTerms);
                         if (relevance > 0.2) { // Lower threshold for better results
                             allResults.push({
                                 ...item,
@@ -1170,24 +1172,42 @@
             }
         }
 
-        function calculateRelevance(item, searchTerm) {
-            const searchLower = searchTerm.toLowerCase();
+        async function getExpandedSearchTerms(searchTerm) {
+            try {
+                const res = await fetch('ai-synonyms.json');
+                const synonyms = await res.json();
+                const baseTerms = searchTerm.toLowerCase().split(/\s+|,|\//).filter(Boolean);
+                const expanded = new Set(baseTerms);
+                const text = searchTerm.toLowerCase();
+                // Expand by category synonyms if any term or phrase matches
+                Object.entries(synonyms).forEach(([category, words]) => {
+                    words.forEach(w => {
+                        if (text.includes(w.toLowerCase())) {
+                            words.forEach(s => expanded.add(s.toLowerCase()));
+                            expanded.add(category.toLowerCase());
+                        }
+                    });
+                });
+                return Array.from(expanded);
+            } catch (e) {
+                console.error('Failed to load synonyms:', e);
+                return searchTerm.toLowerCase().split(/\s+|,|\//).filter(Boolean);
+            }
+        }
+
+        function calculateRelevanceWithSynonyms(item, terms) {
             const titleLower = item.title.toLowerCase();
             const descLower = item.description.toLowerCase();
-            
             let score = 0;
-            
-            // Title matches get higher weight
-            if (titleLower.includes(searchLower)) score += 0.8;
-            if (descLower.includes(searchLower)) score += 0.4;
-            
-            // Partial word matches
-            const words = searchTerm.split(' ');
-            words.forEach(word => {
-                if (titleLower.includes(word.toLowerCase())) score += 0.3;
-                if (descLower.includes(word.toLowerCase())) score += 0.2;
+            // Exact phrase boost (first term can be the full text)
+            const full = terms.join(' ');
+            if (full && (titleLower.includes(full) || descLower.includes(full))) score += 0.6;
+            // Term-wise scoring
+            terms.forEach(term => {
+                if (!term) return;
+                if (titleLower.includes(term)) score += 0.35;
+                if (descLower.includes(term)) score += 0.2;
             });
-            
             return Math.min(score, 1.0);
         }
 

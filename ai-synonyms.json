@@ -1,0 +1,62 @@
+{
+  "technology": [
+    "technology", "tech", "computer science", "cs", "software", "software engineering", "programming", "coding", "developer", "development", "engineering", "computer", "it", "information technology", "ai", "artificial intelligence", "machine learning", "ml", "data science", "robotics", "cybersecurity", "hacking", "cloud", "devops"
+  ],
+  "workshop": [
+    "workshop", "training", "bootcamp", "hands-on", "lab", "session", "clinic", "intensive"
+  ],
+  "seminar": [
+    "seminar", "talk", "lecture", "presentation", "colloquium", "panel", "discussion"
+  ],
+  "volunteer": [
+    "volunteer", "volunteering", "service", "community service", "serve", "help", "outreach"
+  ],
+  "competition": [
+    "competition", "tournament", "contest", "championship", "hackathon", "challenge", "cup", "league"
+  ],
+  "networking": [
+    "networking", "mixer", "meetup", "meet-up", "social", "connections", "career night"
+  ],
+  "education": [
+    "education", "learning", "study", "school", "academic", "academics", "curriculum"
+  ],
+  "health": [
+    "health", "wellness", "fitness", "mental health", "meditation", "yoga", "nutrition"
+  ],
+  "sports": [
+    "sports", "football", "soccer", "basketball", "cricket", "volleyball", "badminton", "tennis"
+  ],
+  "cultural": [
+    "cultural", "culture", "festival", "dance", "music", "celebration", "tradition", "heritage", "party", "bash", "gala", "night out", "social night"
+  ],
+  "career": [
+    "career", "jobs", "job", "internship", "internships", "employment", "hiring", "recruiting", "resume", "cv"
+  ],
+  "community": [
+    "community", "neighborhood", "outreach", "engagement"
+  ],
+  "scholarship": [
+    "scholarship", "scholarships", "grant", "grants", "financial aid", "funding", "fellowship", "bursary"
+  ],
+  "mentorship": [
+    "mentorship", "mentor", "mentoring", "advising", "guidance", "coaching"
+  ],
+  "resource": [
+    "resource", "resources", "materials", "guides", "tutorials", "handbook", "toolkit"
+  ],
+  "news": [
+    "news", "update", "updates", "announcement", "announcements", "press"
+  ],
+  "donation": [
+    "donation", "donate", "fundraising", "fundraiser", "charity", "relief", "help"
+  ],
+  "marketplace": [
+    "marketplace", "market", "buy", "sell", "trade", "exchange"
+  ],
+  "events": [
+    "event", "events", "program", "activity", "activities"
+  ],
+  "alumni": [
+    "alumni", "alum", "graduate", "graduates", "graduated"
+  ]
+}
